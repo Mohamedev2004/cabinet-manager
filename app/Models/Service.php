@@ -13,6 +13,11 @@ class Service extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_price_visible' => 'boolean',
+    ];
+
     public function faqs()
     {
         return $this->hasMany(ServiceFaq::class)->orderBy('created_at');

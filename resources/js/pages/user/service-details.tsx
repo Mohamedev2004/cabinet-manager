@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { Head, usePage, router } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,7 +53,7 @@ export default function ServiceDetails() {
           </div>
         </div>
 
-        {cover && <img src={cover} className="w-full h-64 object-cover rounded-md" alt={service.name} />}
+        {cover && <img src={cover} className="w-full h-auto object-cover rounded-md" alt={service.name} />}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="md:col-span-2">
@@ -75,8 +77,8 @@ export default function ServiceDetails() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {img1 && <img src={img1} className="w-full h-56 object-cover rounded-md" alt="Image 1" />}
-          {img2 && <img src={img2} className="w-full h-56 object-cover rounded-md" alt="Image 2" />}
+          {img1 && <img src={img1} className="w-full h-auto object-cover rounded-md" alt="Image 1" />}
+          {img2 && <img src={img2} className="w-full h-auto object-cover rounded-md" alt="Image 2" />}
         </div>
 
         <Card>

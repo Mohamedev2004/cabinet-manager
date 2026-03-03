@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Head, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -9,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Textarea } from '@/components/ui/textarea';
 
 type Faq = { question: string; answer: string };
 
@@ -41,7 +43,6 @@ export default function CreateService() {
     post(route('services.store'), {
       forceFormData: true,
       onSuccess: () => router.visit(route('services.index')),
-      onError: () => toast.error('Veuillez corriger les erreurs du formulaire'),
     });
   };
 
@@ -104,7 +105,7 @@ export default function CreateService() {
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="description">Description</Label>
-              <Input id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
+              <Textarea id="description" value={data.description} onChange={(e) => setData('description', e.target.value)} />
               {errors.description && <p className="text-destructive text-sm mt-1">{errors.description}</p>}
             </div>
           </CardContent>

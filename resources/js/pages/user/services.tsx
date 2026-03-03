@@ -1,23 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/order */
 import { Head, router, usePage } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus, Eye, MoreHorizontal } from 'lucide-react';
+import { Plus, MoreHorizontal, Trash2 } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import type { BreadcrumbItem } from '@/types';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { Folder } from 'lucide-react';
 import { toast } from 'sonner';
 import { DataTablePagination } from '@/components/data-table-pagination';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { SquarePen } from 'lucide-react';
 
 interface Service {
   id: number;
   name: string;
-  slug: string;
   description?: string;
   price?: number;
   is_active: boolean;
@@ -60,7 +60,7 @@ export default function Services({ services, filters }: ServicesProps) {
     }
   };
 
-  const truncate = (text?: string, max = 120) => {
+  const truncate = (text?: string, max = 80) => {
     if (!text) return '';
     return text.length > max ? `${text.slice(0, max)}…` : text;
   };
@@ -132,43 +132,55 @@ export default function Services({ services, filters }: ServicesProps) {
             {services.data.map((service) => {
               const img = service.cover_image ? `/storage/${service.cover_image}` : undefined;
               return (
-                <Card key={service.id} className="relative overflow-hidden !pt-0">
-                  <div className="absolute top-2 right-2 z-10">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="rounded-full">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => router.get(route('services.edit', service.id))}>
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(service.id)}>
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                <Card key={service.id} className="overflow-hidden !gap-0">
+                  <div className="px-4">
+                    {img ? (
+                      <img src={img} alt={service.name} className="h-auto w-full object-cover rounded-lg" />
+                    ) : (
+                      <div className="h-40 w-full bg-muted rounded-lg" />
+                    )}
                   </div>
-                  {img ? (
-                    <img src={img} alt={service.name} className="h-auto p-4 w-full object-cover rounded-xl" />
-                  ) : (
-                    <div className="h-40 w-full bg-muted rounded-xl" />
-                  )}
-                  <CardHeader className="space-y-2">
+
+                  <CardHeader className='mt-3'>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">{service.name}</CardTitle>
-                      <Badge variant="secondary">{service.slug}</Badge>
+                      <CardTitle className="text-base">
+                        {service.name}
+                      </CardTitle>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => router.get(route('services.edit', service.id))}>
+                            <SquarePen className="mr-2 h-4 w-4" /> Modifier
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(service.id)}
+                            className="text-red-500 focus:text-red-500"
+                            variant='destructive'
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
+
                   <CardContent className="space-y-3">
-                    <p className="text-sm text-muted-foreground">{truncate(service.description)}</p>
-                    <div className="flex items-center justify-between">
-                      <Button size="sm" onClick={() => router.get(route('services.show', service.id))}>
-                        <Eye className="mr-2 h-4 w-4" /> Voir plus
-                      </Button>
-                      <span />
-                    </div>
+                    <p className="text-sm text-muted-foreground text-justify">
+                      {truncate(service.description)}
+                    </p>
+
+                    <Button
+                      className="w-full"
+                      onClick={() => router.get(route('services.show', service.id))}
+                    >
+                      Voir plus
+                    </Button>
                   </CardContent>
                 </Card>
               );

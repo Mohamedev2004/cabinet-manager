@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class ServiceController extends Controller
@@ -38,7 +40,18 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $input = $request->all();
+        foreach (['is_active', 'is_price_visible'] as $key) {
+            if (array_key_exists($key, $input)) {
+                if ($input[$key] === 'yes') {
+                    $input[$key] = true;
+                } elseif ($input[$key] === 'no') {
+                    $input[$key] = false;
+                }
+            }
+        }
+
+        $data = Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric'],
@@ -51,7 +64,7 @@ class ServiceController extends Controller
             'faqs' => ['sometimes', 'array'],
             'faqs.*.question' => ['required_with:faqs', 'string', 'max:255'],
             'faqs.*.answer' => ['required_with:faqs', 'string'],
-        ]);
+        ])->validate();
 
         // handle images if uploaded
         foreach (['cover_image', 'image_one', 'image_two'] as $img) {
@@ -95,41 +108,52 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service)
     {
-        $data = $request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
+        $input = $request->all();
+        
+        // Conversion des booléens
+        $input['is_active'] = ($request->is_active === 'yes' || $request->is_active === true);
+        $input['is_price_visible'] = ($request->is_price_visible === 'yes' || $request->is_price_visible === true);
+
+        $validatedData = Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['nullable', 'numeric'],
-            'is_price_visible' => ['sometimes', 'boolean'],
-            'is_active' => ['sometimes', 'boolean'],
+            'is_price_visible' => ['boolean'],
+            'is_active' => ['boolean'],
             'duration' => ['nullable', 'integer'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'image_one' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'image_two' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'faqs' => ['sometimes', 'array'],
-            'faqs.*.question' => ['required_with:faqs', 'string', 'max:255'],
-            'faqs.*.answer' => ['required_with:faqs', 'string'],
-        ]);
+            'cover_image' => ['nullable', 'image', 'max:2048'],
+            'image_one' => ['nullable', 'image', 'max:2048'],
+            'image_two' => ['nullable', 'image', 'max:2048'],
+        ])->validate();
 
-        foreach (['cover_image', 'image_one', 'image_two'] as $img) {
-            if ($request->hasFile($img)) {
-                $data[$img] = $request->file($img)->store('services', 'public');
+        // On retire les images du tableau principal pour les gérer séparément
+        // Cela évite d'écraser le chemin en base de données par "null"
+        $files = ['cover_image', 'image_one', 'image_two'];
+        $updateData = collect($validatedData)->except($files)->toArray();
+
+        DB::transaction(function () use ($request, $service, $updateData, $files) {
+            // Gestion des fichiers : on ne modifie que si un fichier est présent
+            foreach ($files as $img) {
+                if ($request->hasFile($img)) {
+                    // Supprimer l'ancien fichier s'il existe
+                    if ($service->$img) {
+                        Storage::disk('public')->delete($service->$img);
+                    }
+                    // Stocker le nouveau et ajouter au tableau de mise à jour
+                    $updateData[$img] = $request->file($img)->store('services', 'public');
+                }
             }
-        }
 
-        $faqs = $data['faqs'] ?? null;
-        unset($data['faqs']);
+            $service->update($updateData);
 
-        $service->update($data);
-
-        // Update FAQs: simple way: delete all then recreate
-        if (is_array($faqs)) {
-            $service->faqs()->delete();
-            foreach ($faqs as $faq) {
-                $service->faqs()->create($faq);
+            // Sync FAQs
+            if ($request->has('faqs')) {
+                $service->faqs()->delete();
+                $service->faqs()->createMany($request->faqs);
             }
-        }
+        });
 
-        return redirect()->route('services.index')->with('success', 'Service updated successfully.');
+        return redirect()->route('services.index')->with('success', 'Service mis à jour.');
     }
 
     public function destroy(Service $service)

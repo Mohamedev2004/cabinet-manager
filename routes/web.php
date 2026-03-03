@@ -116,9 +116,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
         });
 
-        // SERVICES
-        Route::resource('services', ServiceController::class);
-        Route::post('services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
+        // SERVICES (explicit routes)
+        Route::prefix('services')->name('services.')->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('index');
+            Route::get('/create', [ServiceController::class, 'create'])->name('create');
+            Route::post('/', [ServiceController::class, 'store'])->name('store');
+            Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
+            Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+            Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+            Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [ServiceController::class, 'restore'])->name('restore');
+        });
     });
 });
 
