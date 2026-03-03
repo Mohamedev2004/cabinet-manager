@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable import/order */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
@@ -105,24 +106,28 @@ export default function Notifications({ notifications, filters }: NotificationsP
   };
 
   const goToPage = (
-    page: number,
-    types: Notification["type"][] = selectedTypes,
-    search: string = searchQuery,
-    perPageValue: number = perPage
-  ) => {
-    const query = {
-      search: search || undefined,
-      types: types.length ? types : undefined,
-      page,
-      perPage: perPageValue,
-    };
+  page: number,
+  types: Notification["type"][] = selectedTypes,
+  search: string = searchQuery,
+  perPageValue: number = perPage
+) => {
+  const query: any = {};
 
-    router.get(route("notifications.index"), query, {
-      preserveState: true,
-      replace: true,
-      preserveScroll: true,
-    });
-  };
+  if (search) query.search = search;
+  if (types.length) query.types = types;
+
+  // only include page if > 1
+  if (page > 1) query.page = page;
+
+  // only include perPage if different from default (10)
+  if (perPageValue !== 10) query.perPage = perPageValue;
+
+  router.get(route("notifications.index"), query, {
+    preserveState: true,
+    replace: true,
+    preserveScroll: true,
+  });
+};
 
   // Handle search input with debounce
   useEffect(() => {

@@ -14,7 +14,7 @@ class Task extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'due_date' => 'datetime',
+        'due_date' => 'date',
     ];
 
     public function patient()

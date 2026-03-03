@@ -1,30 +1,29 @@
 /* eslint-disable react-hooks/incompatible-library */
 /* eslint-disable @typescript-eslint/consistent-type-imports */
-/* eslint-disable import/order */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable import/order */
 "use client";
 
 import * as React from "react";
-import { ColumnDef, useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { DataTableViewOptions } from "@/components/data-table-view-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FolderClock, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CalendarDays } from "lucide-react";
 
 type Filters = {
   search?: string;
   trashed?: "all" | "actifs" | "deleted";
-  status?: string;
   sortBy?: string;
   sortDir?: "asc" | "desc";
   perPage?: number;
@@ -52,13 +51,6 @@ type Props<TData, TValue> = {
   onCompleteMany?: (ids: number[]) => void;
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: "En attente",
-  confirmed: "Confirmé",
-  completed: "Terminé",
-  cancelled: "Annulé",
-};
-
 export function AppointmentsDataTable<TData, TValue>({
   columns,
   data = [],
@@ -79,19 +71,16 @@ export function AppointmentsDataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: (row: any) => `${row.id}`,
-    enableRowSelection: (row: any) => row.original?.status !== "completed",
     state: { rowSelection },
     onRowSelectionChange: setRowSelection,
   });
 
   const [searchInput, setSearchInput] = useState(filters.search ?? "");
-
-  // Debounce search input
   useEffect(() => {
     if (searchInput === (filters.search ?? "")) return;
     const handler = setTimeout(() => onFilterChange("search", searchInput), 500);
     return () => clearTimeout(handler);
-  }, [searchInput, filters.search, onFilterChange]);
+  }, [filters.search, onFilterChange, searchInput]);
 
   const hasData = data.length > 0;
   const selectedIds = Object.keys(rowSelection);
@@ -105,7 +94,7 @@ export function AppointmentsDataTable<TData, TValue>({
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon" className="bg-foreground">
-                <FolderClock className="text-background" />
+                <CalendarDays className="text-background" />
               </EmptyMedia>
               <EmptyTitle>Aucun rendez-vous</EmptyTitle>
               <EmptyDescription>
@@ -125,62 +114,54 @@ export function AppointmentsDataTable<TData, TValue>({
         <div className="rounded-lg mt-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
-              <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Rechercher..."
-                className="w-[240px]"
-              />
-
-              {/* Status filter controlled by props */}
-              <Select
-                value={filters.status ?? "all"}
-                onValueChange={(v) => onFilterChange("status", v === "all" ? undefined : v)}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Tous les statuts" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les statuts</SelectItem>
-                  {Object.entries(STATUS_LABELS).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col">
+                <Input
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Rechercher..."
+                  className="w-[240px]"
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
               {selectedCount > 0 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">Actions groupées ({selectedCount})</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    {onConfirmMany && (
-                      <DropdownMenuItem onClick={() => onConfirmMany(selectedIdsAsNumbers)}>
-                        Confirmer sélection
-                      </DropdownMenuItem>
-                    )}
-                    {onCompleteMany && (
-                      <DropdownMenuItem onClick={() => onCompleteMany(selectedIdsAsNumbers)}>
-                        Marquer terminé
-                      </DropdownMenuItem>
-                    )}
-                    {onCancelMany && (
-                      <DropdownMenuItem onClick={() => onCancelMany(selectedIdsAsNumbers)}>
-                        Annuler sélection
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                  <span className="text-sm text-muted-foreground mr-2">{selectedCount} sélectionné(s)</span>
+                  {onConfirmMany && (
+                    <Button
+                      size="sm"
+                      onClick={() => onConfirmMany(selectedIdsAsNumbers)}
+                    >
+                      Confirmer sélection
+                    </Button>
+                  )}
+                  {onCompleteMany && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onCompleteMany(selectedIdsAsNumbers)}
+                    >
+                      Marquer terminé
+                    </Button>
+                  )}
+                  {onCancelMany && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => onCancelMany(selectedIdsAsNumbers)}
+                    >
+                      Annuler sélection
+                    </Button>
+                  )}
+                </>
               )}
               {onAddClick && (
                 <Button onClick={onAddClick}>
                   <Plus className="mr-2 h-4 w-4" /> Ajouter un rendez-vous
                 </Button>
               )}
+              <DataTableViewOptions table={table} />
             </div>
           </div>
 

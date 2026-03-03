@@ -7,6 +7,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -114,6 +115,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
             Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
         });
+
+        // SERVICES
+        Route::resource('services', ServiceController::class);
+        Route::post('services/{id}/restore', [ServiceController::class, 'restore'])->name('services.restore');
     });
 });
 

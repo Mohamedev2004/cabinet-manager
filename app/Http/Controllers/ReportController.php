@@ -13,7 +13,7 @@ class ReportController extends Controller
 {
     public function create(Patient $patient)
     {
-        return Inertia::render('user/patient-report-create', [
+        return Inertia::render('user/create-patient-report', [
             'patient' => $patient,
         ]);
     }

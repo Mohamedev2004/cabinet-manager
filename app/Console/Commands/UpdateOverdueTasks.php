@@ -16,7 +16,7 @@ class UpdateOverdueTasks extends Command
     {
         $counter = 0;
 
-        $tasks = Task::where('due_date', '<=', now())
+        $tasks = Task::whereDate('due_date', '<=', now())
             ->whereNotIn('status', ['done', 'overdue'])
             ->get();
 

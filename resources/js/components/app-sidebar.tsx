@@ -73,6 +73,11 @@ export function getMainNavItems(unreadCount: number): NavGroup[] {
                     icon: Users,
                 },
                 {
+                    title: 'Services',
+                    href: '/admin/services',
+                    icon: Folder,
+                },
+                {
                     title: 'Tâches',
                     href: '/admin/tasks',
                     icon: ListChecks,
