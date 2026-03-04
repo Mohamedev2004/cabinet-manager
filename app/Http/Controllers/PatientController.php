@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -187,6 +188,7 @@ class PatientController extends Controller
 
     public function show(Request $request, Patient $patient)
     {
+        // Reports filters
         $sortable = [
             'id',
             'gestational_age_weeks',
@@ -226,6 +228,31 @@ class PatientController extends Controller
             return $report;
         });
 
+        // Invoices filters (scoped with inv_*)
+        $invSortable = ['id', 'invoice_number', 'invoice_date', 'total_amount', 'status', 'created_at'];
+        $invStatus = $request->input('inv_status');
+        $invSearch = $request->input('inv_search');
+        $invSortBy = in_array($request->input('inv_sortBy'), $invSortable) ? $request->input('inv_sortBy') : 'created_at';
+        $invSortDir = $request->input('inv_sortDir') === 'asc' ? 'asc' : 'desc';
+        $invPerPage = in_array((int) $request->input('inv_perPage'), [5, 10, 20, 30]) ? (int) $request->input('inv_perPage') : 5;
+
+        $invQuery = $patient->invoices()->with(['patient:id,first_name,last_name', 'items.service']);
+
+        if (! empty($invSearch)) {
+            $invQuery->where('invoice_number', 'like', "%{$invSearch}%");
+        }
+
+        if (! empty($invStatus) && $invStatus !== 'all') {
+            $invQuery->where('status', $invStatus);
+        }
+
+        $patientInvoices = $invQuery
+            ->orderBy($invSortBy, $invSortDir)
+            ->paginate($invPerPage)
+            ->appends($request->query());
+
+        $services = Service::select('id', 'name', 'price')->where('is_active', true)->get();
+
         return inertia('user/patient-details', [
             'patient' => $patient,
             'reports' => $reports,
@@ -235,6 +262,15 @@ class PatientController extends Controller
                 'sortDir' => $sortDir,
                 'perPage' => $perPage,
             ],
+            'patientInvoices' => $patientInvoices,
+            'invoiceFilters' => [
+                'status' => $invStatus ?? 'all',
+                'search' => $invSearch,
+                'sortBy' => $invSortBy,
+                'sortDir' => $invSortDir,
+                'perPage' => $invPerPage,
+            ],
+            'invoiceServices' => $services,
         ]);
     }
 

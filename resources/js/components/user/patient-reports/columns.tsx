@@ -117,7 +117,7 @@ export const createReportColumns = (
     cell: ({ row }) => (
       <Button
         size="sm"
-        variant="outline"
+        variant="default"
         onClick={() =>
           router.visit(
             route("patients.reports.show", {

@@ -35,6 +35,7 @@ type Props = {
   patients: PatientOption[];
   services: ServiceOption[];
   onSuccess?: () => void;
+  defaultPatientId?: number;
 };
 
 export default function CreateInvoiceModal({
@@ -43,8 +44,9 @@ export default function CreateInvoiceModal({
   patients,
   services,
   onSuccess,
+  defaultPatientId,
 }: Props) {
-  const [patientId, setPatientId] = useState<number | null>(null);
+  const [patientId, setPatientId] = useState<number | null>(defaultPatientId ?? null);
   const [invoiceDate, setInvoiceDate] = useState<string>("");
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -209,4 +211,3 @@ export default function CreateInvoiceModal({
     </NativeDialog>
   );
 }
-

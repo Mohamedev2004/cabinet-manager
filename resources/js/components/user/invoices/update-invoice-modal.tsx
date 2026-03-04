@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import type { Invoice, InvoiceItem } from "./columns";
+import { Trash2 } from "lucide-react";
 
 type PatientOption = { id: number; name: string };
 type ServiceOption = { id: number; name: string; price?: number | null };
@@ -204,7 +205,7 @@ export function UpdateInvoiceModal({
                   </div>
                   <div className="col-span-2 flex justify-end">
                     <Button variant="destructive" onClick={() => removeItem(idx)}>
-                      Supprimer
+                      <Trash2 className="w-4 h-4"/>
                     </Button>
                   </div>
                 </div>
