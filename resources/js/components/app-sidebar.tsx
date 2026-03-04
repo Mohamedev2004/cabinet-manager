@@ -3,7 +3,6 @@ import {
     BookOpen,
     Folder,
     SquareKanban,
-    LayoutDashboard,
     ListChecks,
     Users,
     CalendarCheck2,
@@ -12,6 +11,7 @@ import {
     FolderClock,
     FolderPen,
     SquareLibrary,
+    ChartBar,
 } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -38,9 +38,9 @@ export function getMainNavItems(unreadCount: number): NavGroup[] {
             label: 'Application',
             items: [
                 {
-                    title: 'Dashboard',
+                    title: 'Analytiques',
                     href: dashboard(),
-                    icon: LayoutDashboard,
+                    icon: ChartBar,
                 },
                 {
                     title: 'Notifications',

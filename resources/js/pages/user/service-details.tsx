@@ -71,6 +71,7 @@ export default function ServiceDetails() {
         {/* HERO */}
         {cover && (
           <img
+            loading='lazy'
             src={cover}
             alt={service.name}
             className="w-full h-auto object-cover rounded-md"
@@ -157,6 +158,7 @@ export default function ServiceDetails() {
                   <Card key={img.src} className="overflow-hidden p-0">
                     <CardContent className="p-0">
                       <img
+                        loading='lazy'
                         src={img.src}
                         alt={img.alt}
                         className="h-full w-full object-cover"

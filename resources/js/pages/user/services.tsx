@@ -89,11 +89,14 @@ export default function Services({ services, filters }: ServicesProps) {
       searchInitialized.current = true;
       return;
     }
+    if (search === (filters.search ?? '')) {
+      return;
+    }
     const timeout = setTimeout(() => {
       navigateWith({ search, page: 1 });
     }, 500);
     return () => clearTimeout(timeout);
-  }, [search, navigateWith]);
+  }, [search, filters.search, navigateWith]);
 
   const lastFlashRef = useRef<{ success?: string; error?: string; warning?: string }>({ });
   useEffect(() => {
