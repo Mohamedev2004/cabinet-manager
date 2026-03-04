@@ -10,6 +10,7 @@ import { createAppointmentColumns, type Appointment } from "@/components/user/ap
 import { AppointmentsDataTable } from "@/components/user/appointments/data-table";
 import { CreateAppointmentModal } from "@/components/user/appointments/create-appointment-modal";
 import { UpdateAppointmentModal } from "@/components/user/appointments/update-appointment-modal";
+import { CreatePatientModal } from "@/components/user/patients/create-patient-modal";
 import { toast } from "sonner";
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -44,7 +45,14 @@ export default function AppointmentsIndex({ appointments, filters }: Props) {
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCreatePatientOpen, setIsCreatePatientOpen] = useState(false);
   const [selected, setSelected] = useState<Appointment | null>(null);
+  const [patientInitialData, setPatientInitialData] = useState<{
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+  } | undefined>(undefined);
 
   const navigateWith = useCallback((params: Record<string, any>) => {
     router.get(route("appointments.index"), params, { preserveState: true, replace: true });
@@ -79,7 +87,22 @@ export default function AppointmentsIndex({ appointments, filters }: Props) {
   const handleComplete = useCallback((a: Appointment) => {
     router.post(route("appointments.setCompleted", a.id), {}, {
       preserveScroll: true,
-      onSuccess: () => toast.success("Rendez-vous terminé"),
+      onSuccess: () => {
+        toast.success("Rendez-vous terminé");
+        
+        // Open patient creation modal with pre-filled data
+        const names = a.full_name.split(" ");
+        const first_name = names[0] || "";
+        const last_name = names.slice(1).join(" ") || "";
+        
+        setPatientInitialData({
+          first_name,
+          last_name,
+          email: a.email || "",
+          phone: a.phone || "",
+        });
+        setIsCreatePatientOpen(true);
+      },
       onError: () => toast.error("Échec de l'opération"),
     });
   }, []);
@@ -188,6 +211,14 @@ export default function AppointmentsIndex({ appointments, filters }: Props) {
           }}
           appointment={selected}
           onSuccess={() => router.reload({ only: ["appointments"] })}
+        />
+
+        <CreatePatientModal
+          open={isCreatePatientOpen}
+          onOpenChange={setIsCreatePatientOpen}
+          initialData={patientInitialData}
+          onlyBasic={true}
+          onSuccess={() => router.reload()}
         />
       </div>
     </AppLayout>

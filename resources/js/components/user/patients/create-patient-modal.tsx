@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,22 +25,42 @@ interface Props {
   open: boolean;
   onOpenChange: (val: boolean) => void;
   onSuccess?: () => void;
+  initialData?: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+  };
+  onlyBasic?: boolean;
 }
 
-export const CreatePatientModal = ({ open, onOpenChange, onSuccess }: Props) => {
+export const CreatePatientModal = ({ open, onOpenChange, onSuccess, initialData, onlyBasic = false }: Props) => {
   const [step, setStep] = useState(1);
   const [patientId, setPatientId] = useState<number | null>(null);
 
   // Step 1 form
   const step1Form = useForm({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
+    first_name: initialData?.first_name ?? "",
+    last_name: initialData?.last_name ?? "",
+    email: initialData?.email ?? "",
+    phone: initialData?.phone ?? "",
     address: "",
     date_of_birth: "",
     cin: "",
   });
+
+  // Update form when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      step1Form.setData({
+        ...step1Form.data,
+        first_name: initialData.first_name ?? "",
+        last_name: initialData.last_name ?? "",
+        email: initialData.email ?? "",
+        phone: initialData.phone ?? "",
+      });
+    }
+  }, [initialData]);
 
   // Step 2 form
   const step2Form = useForm({
@@ -59,8 +79,18 @@ export const CreatePatientModal = ({ open, onOpenChange, onSuccess }: Props) => 
 
       const patientId = response.data.patient?.id;
       if (patientId) {
-        setPatientId(patientId);
-        setStep(2); // go to step 2
+        if (onlyBasic) {
+          // Reset everything after success
+          step1Form.reset();
+          setStep(1);
+          setPatientId(null);
+          onOpenChange(false);
+          onSuccess?.();
+          toast.success("Patient ajouté avec succès !");
+        } else {
+          setPatientId(patientId);
+          setStep(2); // go to step 2
+        }
       }
     } catch (err: any) {
       if (err.response?.data?.errors) {
@@ -278,7 +308,7 @@ export const CreatePatientModal = ({ open, onOpenChange, onSuccess }: Props) => 
               type="submit"
               disabled={step === 1 ? step1Form.processing : step2Form.processing}
             >
-              {step === 1 ? "Suivant" : "Ajouter le patient"}
+              {step === 1 ? (onlyBasic ? "Ajouter le patient" : "Suivant") : "Ajouter le patient"}
             </Button>
           </NativeDialogFooter>
         </form>
