@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('reminder_sent')->default(false)->index();
             $table->string('pdf_path')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

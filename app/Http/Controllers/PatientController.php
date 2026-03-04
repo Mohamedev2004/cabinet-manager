@@ -286,6 +286,11 @@ class PatientController extends Controller
             $report->delete();
         }
 
+        // Soft-delete all related invoices
+        foreach ($patient->invoices as $invoice) {
+            $invoice->delete();
+        }
+
         // Soft-delete the patient
         $patient->delete();
 
@@ -311,6 +316,11 @@ class PatientController extends Controller
                 $report->delete();
             }
 
+            // Soft-delete all related invoices
+            foreach ($patient->invoices as $invoice) {
+                $invoice->delete();
+            }
+
             // Delete the patient
             $patient->delete();
         }
@@ -332,6 +342,9 @@ class PatientController extends Controller
             // Restore all soft-deleted reports
             $patient->reports()->onlyTrashed()->restore();
 
+            // Restore all soft-deleted invoices
+            $patient->invoices()->onlyTrashed()->restore();
+
             return back()->with('success', 'Patient et ses rapports restaurés avec succès.');
         }
 
@@ -348,6 +361,7 @@ class PatientController extends Controller
         foreach ($patients as $patient) {
             $patient->restore();
             $patient->reports()->onlyTrashed()->restore();
+            $patient->invoices()->onlyTrashed()->restore();
         }
 
         return back()->with('success', 'Tous les patients et leurs rapports supprimés ont été restaurés avec succès.');
