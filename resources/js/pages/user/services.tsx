@@ -4,7 +4,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Plus, MoreHorizontal, Trash2, Banknote, Clock } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { BreadcrumbItem } from '@/types';
@@ -14,12 +14,15 @@ import { toast } from 'sonner';
 import { DataTablePagination } from '@/components/data-table-pagination';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SquarePen } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface Service {
   id: number;
   name: string;
   description?: string;
   price?: number;
+  is_price_visible:boolean;
+  duration?: number | null;
   is_active: boolean;
   cover_image?: string | null;
 }
@@ -135,7 +138,7 @@ export default function Services({ services, filters }: ServicesProps) {
                 <Card key={service.id} className="overflow-hidden !gap-0">
                   <div className="px-4">
                     {img ? (
-                      <img src={img} alt={service.name} className="h-auto w-full object-cover rounded-lg" />
+                      <img loading='lazy' src={img} alt={service.name} className="h-auto w-full object-cover rounded-lg" />
                     ) : (
                       <div className="h-40 w-full bg-muted rounded-lg" />
                     )}
@@ -170,13 +173,37 @@ export default function Services({ services, filters }: ServicesProps) {
                     </div>
                   </CardHeader>
 
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4 mt-2">
                     <p className="text-sm text-muted-foreground text-justify">
                       {truncate(service.description)}
                     </p>
 
+                    {/* Price & Duration */}
+                    <div className="flex flex-wrap gap-2">
+                      {service.price && (
+                        <Badge
+                          variant='outline'
+                          className="text-xs"
+                        >
+                          <Banknote className="h-3.5 w-3.5" />
+                          {service.price} MAD
+                        </Badge>
+                      )}
+
+                      {service.duration && (
+                        <Badge
+                          variant='outline'
+                          className="text-xs"
+                        >
+                          <Clock className="h-3.5 w-3.5" />
+                          {service.duration} min
+                        </Badge>
+                      )}
+                    </div>
+
                     <Button
-                      className="w-full"
+                      className="w-full mt-2"
+                      size='sm'
                       onClick={() => router.get(route('services.show', service.id))}
                     >
                       Voir plus

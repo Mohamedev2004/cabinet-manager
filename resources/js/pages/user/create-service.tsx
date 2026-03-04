@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Trash2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import ImageCropper from '@/components/image-cropper';
 
 type Faq = { question: string; answer: string };
 
@@ -37,6 +38,12 @@ export default function CreateService() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [imageOnePreview, setImageOnePreview] = useState<string | null>(null);
   const [imageTwoPreview, setImageTwoPreview] = useState<string | null>(null);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropTarget, setCropTarget] = useState<'cover_image' | 'image_one' | 'image_two' | null>(null);
+  const [cropAspect, setCropAspect] = useState<number>(1);
+  const COVER_ASPECT = 1280 / 280;
+  const OTHER_ASPECT = 1;
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +55,30 @@ export default function CreateService() {
 
   const addFaq = () => setData('faqs', [...data.faqs, { question: '', answer: '' }]);
   const removeFaq = (index: number) => setData('faqs', data.faqs.filter((_, i) => i !== index));
+
+  const openCropper = (file: File, target: 'cover_image' | 'image_one' | 'image_two') => {
+    setCropFile(file);
+    setCropTarget(target);
+    setCropAspect(target === 'cover_image' ? COVER_ASPECT : OTHER_ASPECT);
+    setCropperOpen(true);
+  };
+
+  const handleCropComplete = (file: File) => {
+    if (!cropTarget) return;
+    if (cropTarget === 'cover_image') {
+      setData('cover_image', file);
+      setCoverPreview(URL.createObjectURL(file));
+    } else if (cropTarget === 'image_one') {
+      setData('image_one', file);
+      setImageOnePreview(URL.createObjectURL(file));
+    } else if (cropTarget === 'image_two') {
+      setData('image_two', file);
+      setImageTwoPreview(URL.createObjectURL(file));
+    }
+    setCropperOpen(false);
+    setCropFile(null);
+    setCropTarget(null);
+  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -123,8 +154,9 @@ export default function CreateService() {
                 accept="image/*"
                 onChange={(e: any) => {
                   const f = e.target.files?.[0] ?? null;
-                  setData('cover_image', f);
-                  setCoverPreview(f ? URL.createObjectURL(f) : null);
+                  if (f) {
+                    openCropper(f, 'cover_image');
+                  }
                 }}
               />
               {errors.cover_image && <p className="text-destructive text-sm mt-1">{errors.cover_image}</p>}
@@ -137,8 +169,9 @@ export default function CreateService() {
                 accept="image/*"
                 onChange={(e: any) => {
                   const f = e.target.files?.[0] ?? null;
-                  setData('image_one', f);
-                  setImageOnePreview(f ? URL.createObjectURL(f) : null);
+                  if (f) {
+                    openCropper(f, 'image_one');
+                  }
                 }}
               />
               {errors.image_one && <p className="text-destructive text-sm mt-1">{errors.image_one}</p>}
@@ -151,8 +184,9 @@ export default function CreateService() {
                 accept="image/*"
                 onChange={(e: any) => {
                   const f = e.target.files?.[0] ?? null;
-                  setData('image_two', f);
-                  setImageTwoPreview(f ? URL.createObjectURL(f) : null);
+                  if (f) {
+                    openCropper(f, 'image_two');
+                  }
                 }}
               />
               {errors.image_two && <p className="text-destructive text-sm mt-1">{errors.image_two}</p>}
@@ -219,6 +253,15 @@ export default function CreateService() {
         <div className="flex justify-end">
           <Button type="submit" disabled={processing}>Créer</Button>
         </div>
+        {cropFile && (
+          <ImageCropper
+            isOpen={cropperOpen}
+            onClose={() => setCropperOpen(false)}
+            onCropComplete={handleCropComplete}
+            imageFile={cropFile}
+            aspectRatio={cropAspect}
+          />
+        )}
       </form>
     </AppLayout>
   );

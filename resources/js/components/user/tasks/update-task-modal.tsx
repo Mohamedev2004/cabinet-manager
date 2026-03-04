@@ -10,7 +10,7 @@ import {
 } from "@/components/native-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectTrigger,
@@ -18,9 +18,9 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { useTaskActions } from "@/components/user/tasks/tasks-actions";
+import { Textarea } from "@/components/ui/textarea";
 import { type Task } from "@/components/user/tasks/columns";
+import { useTaskActions } from "@/components/user/tasks/tasks-actions";
 
 interface Props {
   task: Task;

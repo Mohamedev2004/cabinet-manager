@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { router } from "@inertiajs/react";
 import { Plus } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   NativeDialog,
   NativeDialogContent,
@@ -12,7 +14,6 @@ import {
 } from "@/components/native-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectTrigger,
@@ -20,8 +21,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-import { router } from "@inertiajs/react";
+import { Textarea } from "@/components/ui/textarea";
 
 export type TaskPriority = "low" | "medium" | "high";
 
