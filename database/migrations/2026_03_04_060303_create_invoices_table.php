@@ -24,6 +24,7 @@ return new class extends Migration
             // Updated status
             $table->enum('status', ['pending', 'partially_paid', 'paid'])->default('pending');
             $table->date('invoice_date')->nullable();
+            $table->string('pdf_path')->nullable();
             $table->timestamps();
         });
     }

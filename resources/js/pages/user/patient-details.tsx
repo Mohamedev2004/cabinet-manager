@@ -262,7 +262,12 @@ export default function PatientDetails({ patient, reports, filters, patientInvoi
         </Card>
 
         {/* ================= INVOICES SECTION ================= */}
-        <Card className="bg-sidebar px-4 !py-0">
+        <Card className="bg-sidebar px-4">
+          <CardHeader className="px-0">
+            <CardTitle className="text-xl">Factures</CardTitle>
+            <CardDescription>Historique des factures et paiements du patient</CardDescription>
+          </CardHeader>
+
           <PatientInvoiceSection
             patientId={patient.id}
             patientName={`${patient.first_name} ${patient.last_name}`}

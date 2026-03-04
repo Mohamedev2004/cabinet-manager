@@ -127,7 +127,9 @@ export function InvoicesDataTable<TData extends Invoice, TValue>({
     { value: "paid", label: "Payée" },
   ];
 
-  const isFiltering = Boolean(filters.search || filters.status);
+  const isFiltering = Boolean(
+    filters.search || (filters.status && filters.status !== "all")
+  );
 
   // ✅ Improved Empty State
   if (!data || data.length === 0) {
@@ -152,7 +154,7 @@ export function InvoicesDataTable<TData extends Invoice, TValue>({
             </EmptyDescription>
           </EmptyHeader>
 
-          {!isFiltering && onAddClick && (
+          {onAddClick && (
             <EmptyContent className="flex-row justify-center gap-2">
               <Button onClick={onAddClick}>
                 <Plus className="mr-2 h-4 w-4" />

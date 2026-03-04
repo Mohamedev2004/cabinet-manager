@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { CreditCard, Eye, MoreHorizontal, SquarePen } from "lucide-react";
+import { Check, Clock, CreditCard, Download, Eye, Loader, Loader2, MoreHorizontal, SquarePen } from "lucide-react";
 
 export interface InvoiceItem {
   id?: number;
@@ -117,6 +117,27 @@ export const createInvoiceColumns = (
       if (!i.patient)
         return <span className="text-muted-foreground italic">Aucun</span>;
       return `${i.patient.first_name} ${i.patient.last_name}`;
+    },
+  },
+
+  // Services
+  {
+    id: "services",
+    header: "Services",
+    cell: ({ row }) => {
+      const items = row.original.items ?? [];
+      if (items.length === 0)
+        return <span className="text-muted-foreground italic text-xs">Aucun</span>;
+
+      return (
+        <div className="flex flex-nowrap gap-1">
+          {items.map((item, idx) => (
+            <Badge key={idx} variant="outline" className="">
+              {item.service?.name ?? `Acté #${item.service_id}`}
+            </Badge>
+          ))}
+        </div>
+      );
     },
   },
 
@@ -253,16 +274,26 @@ export const createInvoiceColumns = (
               Payer
             </DropdownMenuItem>
 
+
             <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <a href={route("invoices.download", invoice.id)}>
+                <Download className="mr-2 h-4 w-4" />
+                Télécharger PDF
+              </a>
+            </DropdownMenuItem>
 
             {invoice.status !== "pending" && (
               <DropdownMenuItem onClick={() => opts.onSetPending(invoice)}>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Marquer en attente
               </DropdownMenuItem>
             )}
 
             {invoice.status !== "paid" && (
               <DropdownMenuItem onClick={() => opts.onSetPaid(invoice)}>
+                <Check className="mr-2 h-4 w-4" />
                 Marquer payée
               </DropdownMenuItem>
             )}

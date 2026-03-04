@@ -6,7 +6,9 @@ use App\Models\Invoice;
 use App\Models\Patient;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class InvoiceFactory extends Factory
 {
@@ -91,6 +93,25 @@ class InvoiceFactory extends Factory
                 'paid_amount' => $paidAmount,
                 'remaining_amount' => $remaining,
                 'status' => $status,
+            ]);
+
+            // 📄 GENERATE AND STORE PDF
+            $pdfFileName = Str::uuid().'.pdf';
+            $pdfRelativePath = 'invoices/'.$pdfFileName;
+
+            // Ensure directory exists on public disk
+            Storage::disk('public')->makeDirectory('invoices');
+
+            // Generate and save using Spatie Laravel PDF
+            Pdf::view('invoices.pdf', [
+                'invoice' => $invoice->load(['patient', 'items.service']),
+            ])->save(
+                Storage::disk('public')->path($pdfRelativePath)
+            );
+
+            // Save the path to the database
+            $invoice->update([
+                'pdf_path' => $pdfRelativePath,
             ]);
         });
     }

@@ -90,6 +90,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/selected/pending', [InvoiceController::class, 'setSelectedPending'])->name('setSelectedPending');
             Route::post('/selected/paid', [InvoiceController::class, 'setSelectedPaid'])->name('setSelectedPaid');
+            Route::get('/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('download');
         });
 
         // CONTACTS
