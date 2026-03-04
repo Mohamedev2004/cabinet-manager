@@ -135,23 +135,27 @@ export function TasksDataTable<TData, TValue>({
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Input
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Rechercher</span>
+              <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Rechercher..."
                 className="w-[240px]"
               />
-            <Label>Statut</Label>
-            <Select
-              value={filters.status ?? "all"}
-              onValueChange={(val) =>
-                onFilterChange("status", val === "all" ? undefined : val)
-              }
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Tous" />
-              </SelectTrigger>
-              <SelectContent>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Statut</span>
+              <Select
+                value={filters.status ?? "all"}
+                onValueChange={(val) =>
+                  onFilterChange("status", val === "all" ? undefined : val)
+                }
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Tous" />
+                </SelectTrigger>
+                <SelectContent>
                 <SelectItem value="all">Tous</SelectItem>
                 {STATUS_OPTIONS.map(s => (
                   <SelectItem key={s.value} value={s.value}>
@@ -160,21 +164,23 @@ export function TasksDataTable<TData, TValue>({
                 ))}
               </SelectContent>
             </Select>
+            </div>
           </div>
 
           {/* Priority Filter */}
           <div className="flex items-center gap-2">
-            <Label>Priorité</Label>
-            <Select
-              value={filters.priority ?? "all"}
-              onValueChange={(val) =>
-                onFilterChange("priority", val === "all" ? undefined : val)
-              }
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Toutes" />
-              </SelectTrigger>
-              <SelectContent>
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Priorité</span>
+              <Select
+                value={filters.priority ?? "all"}
+                onValueChange={(val) =>
+                  onFilterChange("priority", val === "all" ? undefined : val)
+                }
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Toutes" />
+                </SelectTrigger>
+                <SelectContent>
                 <SelectItem value="all">Toutes</SelectItem>
                 {PRIORITY_OPTIONS.map(p => (
                   <SelectItem key={p.value} value={p.value}>
@@ -183,6 +189,7 @@ export function TasksDataTable<TData, TValue>({
                 ))}
               </SelectContent>
             </Select>
+            </div>
           </div>
         </div>
 

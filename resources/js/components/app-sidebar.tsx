@@ -12,6 +12,7 @@ import {
     FolderPen,
     SquareLibrary,
     ChartBar,
+    WalletCards,
 } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -72,6 +73,11 @@ export function getMainNavItems(unreadCount: number): NavGroup[] {
                     title: 'Patients',
                     href: '/admin/patients',
                     icon: Users,
+                },
+                {
+                    title: 'Factures',
+                    href: '/admin/invoices',
+                    icon: WalletCards,
                 },
                 {
                     title: 'Services',

@@ -62,7 +62,7 @@ export default function Services({ services, filters }: ServicesProps) {
     }
   };
 
-  const truncate = (text?: string, max = 80) => {
+  const truncate = (text?: string, max = 70) => {
     if (!text) return '';
     return text.length > max ? `${text.slice(0, max)}…` : text;
   };
@@ -140,9 +140,12 @@ export default function Services({ services, filters }: ServicesProps) {
           </div>
         ) : (
       <div className="w-full px-6 mx-auto">
-        {hasServices && <h2 className="text-2xl font-bold tracking-tight mt-4 mb-4">Services</h2>}
+        {hasServices && <h2 className="text-2xl font-bold tracking-tight mt-4 mb-4">Services ({services.total})</h2>}
         <div className="flex items-center justify-between mb-6">
-          <Input placeholder="Search..." value={search} onChange={handleSearch} className="w-64" />
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Rechercher</span>
+            <Input placeholder="Rechercher..." value={search} onChange={handleSearch} className="w-64" />
+          </div>
           <Button onClick={() => router.get(route('services.create'))}>
             <Plus className="mr-2 h-4 w-4" /> Create Service
           </Button>
@@ -152,7 +155,7 @@ export default function Services({ services, filters }: ServicesProps) {
             {services.data.map((service) => {
               const img = service.cover_image ? `/storage/${service.cover_image}` : undefined;
               return (
-                <Card key={service.id} className="overflow-hidden !gap-0">
+                <Card key={service.id} className="overflow-hidden !gap-0 bg-sidebar">
                   <div className="px-4">
                     {img ? (
                       <img loading='lazy' src={img} alt={service.name} className="h-auto w-full object-cover rounded-lg" />

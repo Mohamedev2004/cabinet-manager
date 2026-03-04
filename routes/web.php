@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\KanbanController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
@@ -81,6 +82,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/selected/pending', [TaskController::class, 'setSelectedPending'])->name('setSelectedPending');
         });
 
+        // INVOICES
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index');
+            Route::post('/', [InvoiceController::class, 'store'])->name('store');
+            Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
+            Route::put('/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/selected/pending', [InvoiceController::class, 'setSelectedPending'])->name('setSelectedPending');
+            Route::post('/selected/paid', [InvoiceController::class, 'setSelectedPaid'])->name('setSelectedPaid');
+        });
+
         // CONTACTS
         Route::prefix('contacts')->name('contacts.')->group(function () {
             Route::get('/', [ContactController::class, 'index'])->name('index');
@@ -116,7 +127,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
         });
 
-        // SERVICES (explicit routes)
+        // SERVICES
         Route::prefix('services')->name('services.')->group(function () {
             Route::get('/', [ServiceController::class, 'index'])->name('index');
             Route::get('/create', [ServiceController::class, 'create'])->name('create');

@@ -22,4 +22,9 @@ class Service extends Model
     {
         return $this->hasMany(ServiceFaq::class)->orderBy('created_at');
     }
+
+    public function invoiceItems()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
 }

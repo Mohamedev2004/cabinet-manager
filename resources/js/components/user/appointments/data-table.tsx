@@ -115,6 +115,7 @@ export function AppointmentsDataTable<TData, TValue>({
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">Rechercher</span>
                 <Input
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
