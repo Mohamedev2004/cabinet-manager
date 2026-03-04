@@ -11,6 +11,7 @@ import {
     MailPlus,
     FolderClock,
     FolderPen,
+    SquareLibrary,
 } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -75,7 +76,7 @@ export function getMainNavItems(unreadCount: number): NavGroup[] {
                 {
                     title: 'Services',
                     href: '/admin/services',
-                    icon: Folder,
+                    icon: SquareLibrary,
                 },
                 {
                     title: 'Tâches',

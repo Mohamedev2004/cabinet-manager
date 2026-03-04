@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/order */
 import { Head, router, usePage } from '@inertiajs/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, MoreHorizontal, Trash2, Banknote, Clock } from 'lucide-react';
@@ -51,7 +51,6 @@ export default function Services({ services, filters }: ServicesProps) {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    router.get(route('services.index'), { search: e.target.value, perPage: filters.perPage }, { preserveState: true });
   };
 
   const handleDelete = (id: number) => {
@@ -68,18 +67,33 @@ export default function Services({ services, filters }: ServicesProps) {
     return text.length > max ? `${text.slice(0, max)}…` : text;
   };
 
-  const navigateWith = (partial: Partial<{ search: string; page: number; perPage: number }>) => {
-    const query = {
-      search: partial.search ?? filters.search ?? '',
-      page: partial.page ?? services.current_page,
-      perPage: partial.perPage ?? filters.perPage ?? services.per_page,
-    };
-    router.get(route('services.index'), query, {
-      preserveState: true,
-      replace: true,
-      preserveScroll: true,
-    });
-  };
+  const navigateWith = useCallback(
+    (partial: Partial<{ search: string; page: number; perPage: number }>) => {
+      const query = {
+        search: partial.search ?? filters.search ?? '',
+        page: partial.page ?? services.current_page,
+        perPage: partial.perPage ?? filters.perPage ?? services.per_page,
+      };
+      router.get(route('services.index'), query, {
+        preserveState: true,
+        replace: true,
+        preserveScroll: true,
+      });
+    },
+    [filters.search, filters.perPage, services.current_page, services.per_page]
+  );
+
+  const searchInitialized = useRef(false);
+  useEffect(() => {
+    if (!searchInitialized.current) {
+      searchInitialized.current = true;
+      return;
+    }
+    const timeout = setTimeout(() => {
+      navigateWith({ search, page: 1 });
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [search, navigateWith]);
 
   const lastFlashRef = useRef<{ success?: string; error?: string; warning?: string }>({ });
   useEffect(() => {
