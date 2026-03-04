@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable import/order */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { router } from "@inertiajs/react";
 import {
   NativeDialog,
@@ -45,29 +46,48 @@ export function UpdateInvoiceModal({
   services,
   onSuccess,
 }: Props) {
-  const [patientId, setPatientId] = useState<number | null>(invoice?.patient_id ?? null);
-  const [invoiceDate, setInvoiceDate] = useState<string>(invoice?.invoice_date ?? "");
-  const [status, setStatus] = useState<"pending" | "paid">(invoice?.status ?? "pending");
-  const [items, setItems] = useState<InvoiceItem[]>(
-    (invoice?.items ?? []).map((i) => ({
-      id: i.id,
-      service_id: i.service_id,
-      unit_price: i.unit_price,
-    }))
-  );
+  const [patientId, setPatientId] = useState<number | null>(null);
+  const [invoiceDate, setInvoiceDate] = useState<string>("");
+  const [items, setItems] = useState<InvoiceItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Reset state when invoice changes
+  useEffect(() => {
+    if (!invoice) return;
+
+    setPatientId(invoice.patient_id ?? null);
+    setInvoiceDate(invoice.invoice_date ?? "");
+    setItems(
+      (invoice.items ?? []).map((i) => ({
+        id: i.id,
+        service_id: i.service_id,
+        unit_price: i.unit_price,
+      }))
+    );
+  }, [invoice]);
+
+  // Auto calculate total
+  const totalAmount = useMemo(() => {
+    return items.reduce((sum, item) => sum + Number(item.unit_price), 0);
+  }, [items]);
 
   const addItem = () => {
     const firstService = services[0];
     if (!firstService) return;
+
     setItems((prev) => [
       ...prev,
-      { service_id: firstService.id, unit_price: Number(firstService.price ?? 0) },
+      {
+        service_id: firstService.id,
+        unit_price: Number(firstService.price ?? 0),
+      },
     ]);
   };
 
   const updateItem = (index: number, patch: Partial<InvoiceItem>) => {
-    setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
+    setItems((prev) =>
+      prev.map((it, i) => (i === index ? { ...it, ...patch } : it))
+    );
   };
 
   const removeItem = (index: number) => {
@@ -76,22 +96,28 @@ export function UpdateInvoiceModal({
 
   const handleSubmit = () => {
     if (!invoice) return;
+
     if (!patientId) {
       toast.error("Sélectionnez un patient");
       return;
     }
+
     if (items.length === 0) {
       toast.error("Ajoutez au moins un service");
       return;
     }
+
     setSubmitting(true);
+
     router.put(
       route("invoices.update", invoice.id),
       {
         patient_id: patientId,
         invoice_date: invoiceDate || null,
-        status,
-        items: items.map((i) => ({ service_id: i.service_id, unit_price: i.unit_price })),
+        items: items.map((i) => ({
+          service_id: i.service_id,
+          unit_price: i.unit_price,
+        })),
       },
       {
         preserveScroll: true,
@@ -116,10 +142,14 @@ export function UpdateInvoiceModal({
         </NativeDialogHeader>
 
         <div className="grid gap-4 py-4">
+
           {/* Patient */}
           <div className="grid gap-1">
             <Label>Patient</Label>
-            <Select value={patientId ? String(patientId) : ""} onValueChange={(v) => setPatientId(Number(v))}>
+            <Select
+              value={patientId ? String(patientId) : ""}
+              onValueChange={(v) => setPatientId(Number(v))}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Sélectionner un patient" />
               </SelectTrigger>
@@ -136,24 +166,14 @@ export function UpdateInvoiceModal({
           {/* Invoice Date */}
           <div className="grid gap-1">
             <Label>Date d'échéance</Label>
-            <Input type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+            <Input
+              type="date"
+              value={invoiceDate}
+              onChange={(e) => setInvoiceDate(e.target.value)}
+            />
           </div>
 
-          {/* Status */}
-          <div className="grid gap-1">
-            <Label>Statut</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as "pending" | "paid")}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Statut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="paid">Payée</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Items */}
+          {/* Services */}
           <div className="space-y-2">
             <div className="flex items-center justify-between mt-4">
               <Label>Services</Label>
@@ -162,7 +182,11 @@ export function UpdateInvoiceModal({
               </Button>
             </div>
 
-            {items.length === 0 && <p className="text-sm text-muted-foreground">Aucun service ajouté.</p>}
+            {items.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                Aucun service ajouté.
+              </p>
+            )}
 
             <div className="space-y-3">
               {items.map((item, idx) => (
@@ -172,8 +196,13 @@ export function UpdateInvoiceModal({
                     <Select
                       value={String(item.service_id)}
                       onValueChange={(v) => {
-                        const s = services.find((ss) => ss.id === Number(v));
-                        updateItem(idx, { service_id: Number(v), unit_price: Number(s?.price ?? 0) });
+                        const s = services.find(
+                          (ss) => ss.id === Number(v)
+                        );
+                        updateItem(idx, {
+                          service_id: Number(v),
+                          unit_price: Number(s?.price ?? 0),
+                        });
                       }}
                     >
                       <SelectTrigger className="w-full">
@@ -196,12 +225,19 @@ export function UpdateInvoiceModal({
                       step="0.01"
                       min="0"
                       value={item.unit_price}
-                      onChange={(e) => updateItem(idx, { unit_price: Number(e.target.value) })}
+                      onChange={(e) =>
+                        updateItem(idx, {
+                          unit_price: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
 
                   <div className="col-span-2 flex justify-end">
-                    <Button variant="destructive" onClick={() => removeItem(idx)}>
+                    <Button
+                      variant="destructive"
+                      onClick={() => removeItem(idx)}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>

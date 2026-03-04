@@ -76,6 +76,8 @@ class InvoiceController extends Controller
                 'patient_id' => $validated['patient_id'],
                 'invoice_number' => $this->generateInvoiceNumber(),
                 'total_amount' => $total,
+                'paid_amount' => 0,
+                'remaining_amount' => $total,
                 'status' => 'pending',
                 'invoice_date' => $validated['invoice_date'] ?? null,
             ]);
@@ -96,7 +98,6 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'patient_id' => 'required|exists:patients,id',
             'invoice_date' => 'nullable|date',
-            'status' => 'required|in:pending,paid',
             'items' => 'required|array|min:1',
             'items.*.service_id' => 'required|exists:services,id',
             'items.*.unit_price' => 'required|numeric|min:0',
@@ -105,11 +106,24 @@ class InvoiceController extends Controller
         return DB::transaction(function () use ($invoice, $validated) {
             $total = collect($validated['items'])->sum(fn ($i) => (float) $i['unit_price']);
 
+            // Recalculate status and remaining based on existing paid_amount
+            $paidAmount = $invoice->paid_amount;
+            $remaining = max($total - $paidAmount, 0);
+
+            if ($paidAmount <= 0) {
+                $status = 'pending';
+            } elseif ($paidAmount < $total) {
+                $status = 'partially_paid';
+            } else {
+                $status = 'paid';
+            }
+
             $invoice->update([
                 'patient_id' => $validated['patient_id'],
                 'invoice_date' => $validated['invoice_date'] ?? null,
-                'status' => $validated['status'],
+                'status' => $status,
                 'total_amount' => $total,
+                'remaining_amount' => $remaining,
             ]);
 
             $invoice->items()->delete();
@@ -128,10 +142,49 @@ class InvoiceController extends Controller
     public function updateStatus(Request $request, Invoice $invoice)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,paid',
+            'status' => 'required|in:pending,partially_paid,paid',
+            'paid_amount' => 'nullable|numeric|min:0',
         ]);
 
-        $invoice->update(['status' => $validated['status']]);
+        $paidAmount = $invoice->paid_amount;
+
+        // If manually marking as paid
+        if ($validated['status'] === 'paid') {
+            $paidAmount = $invoice->total_amount;
+        }
+
+        // If marking as pending
+        if ($validated['status'] === 'pending') {
+            $paidAmount = 0;
+        }
+
+        // If partially paid → require paid_amount input
+        if ($validated['status'] === 'partially_paid') {
+            if (! isset($validated['paid_amount'])) {
+                return back()->withErrors([
+                    'paid_amount' => 'Le montant payé est requis pour un paiement partiel.',
+                ]);
+            }
+
+            $paidAmount = min($validated['paid_amount'], $invoice->total_amount);
+        }
+
+        $remaining = max($invoice->total_amount - $paidAmount, 0);
+
+        // Determine real status automatically
+        if ($paidAmount <= 0) {
+            $status = 'pending';
+        } elseif ($paidAmount < $invoice->total_amount) {
+            $status = 'partially_paid';
+        } else {
+            $status = 'paid';
+        }
+
+        $invoice->update([
+            'paid_amount' => $paidAmount,
+            'remaining_amount' => $remaining,
+            'status' => $status,
+        ]);
 
         return back()->with('success', 'Statut de la facture mis à jour');
     }

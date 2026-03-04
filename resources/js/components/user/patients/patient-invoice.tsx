@@ -8,6 +8,7 @@ import { InvoicesDataTable } from "@/components/user/invoices/data-table";
 import { createInvoiceColumns, type Invoice } from "@/components/user/invoices/columns";
 import CreateInvoiceModal from "@/components/user/invoices/create-invoice-modal";
 import { UpdateInvoiceModal } from "@/components/user/invoices/update-invoice-modal";
+import { PaymentModal } from "@/components/user/invoices/payment-modal";
 import { toast } from "sonner";
 
 type Pagination<T> = {
@@ -41,6 +42,7 @@ export default function PatientInvoiceSection({ patientId, invoices, filters, se
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [selected, setSelected] = useState<Invoice | null>(null);
 
   const navigateWith = useCallback((params: Record<string, any>) => {
@@ -123,6 +125,10 @@ export default function PatientInvoiceSection({ patientId, invoices, filters, se
           setSelected(invoice);
           setIsEditOpen(true);
         },
+        onPay: (invoice) => {
+          setSelected(invoice);
+          setIsPaymentOpen(true);
+        },
         onSetPending: handleSetPending,
         onSetPaid: handleSetPaid,
         currentSortBy: filters.sortBy,
@@ -184,6 +190,17 @@ export default function PatientInvoiceSection({ patientId, invoices, filters, se
         invoice={selected}
         patients={singlePatient}
         services={services}
+        onSuccess={() => router.reload({ only: ["patientInvoices"] })}
+      />
+
+      <PaymentModal
+        key={selected?.id ? `pay-${selected.id}` : "pay-new"}
+        open={isPaymentOpen}
+        onOpenChange={(v) => {
+          setIsPaymentOpen(v);
+          if (!v) setSelected(null);
+        }}
+        invoice={selected}
         onSuccess={() => router.reload({ only: ["patientInvoices"] })}
       />
     </div>

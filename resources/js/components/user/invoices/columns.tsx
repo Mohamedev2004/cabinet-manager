@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, MoreHorizontal, SquarePen } from "lucide-react";
+import { CreditCard, Eye, MoreHorizontal, SquarePen } from "lucide-react";
 
 export interface InvoiceItem {
   id?: number;
@@ -26,14 +26,21 @@ export interface Invoice {
   id: number;
   invoice_number: string;
   invoice_date?: string | null;
-  status: "pending" | "paid";
+
+  // ✅ UPDATED STATUS
+  status: "pending" | "partially_paid" | "paid";
+
   total_amount: number;
+  paid_amount: number;          // ✅ NEW
+  remaining_amount: number;     // ✅ NEW
+
   patient_id: number;
   patient?: {
     id: number;
     first_name: string;
     last_name: string;
   } | null;
+
   items?: InvoiceItem[];
   created_at: string;
   updated_at: string;
@@ -43,8 +50,10 @@ export const createInvoiceColumns = (
   opts: {
     onView: (invoice: Invoice) => void;
     onEdit: (invoice: Invoice) => void;
+    onPay: (invoice: Invoice) => void;
     onSetPending: (invoice: Invoice) => void;
     onSetPaid: (invoice: Invoice) => void;
+    onSetPartiallyPaid?: (invoice: Invoice) => void;
     currentSortBy?: string;
     currentSortDir?: "asc" | "desc";
     onSortChange?: (sortBy: string, sortDir: "asc" | "desc") => void;
@@ -54,8 +63,13 @@ export const createInvoiceColumns = (
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
         aria-label="Tout sélectionner"
       />
     ),
@@ -70,6 +84,7 @@ export const createInvoiceColumns = (
     enableHiding: false,
   },
 
+  // Invoice Number
   {
     accessorKey: "invoice_number",
     header: ({ column }) => (
@@ -84,6 +99,7 @@ export const createInvoiceColumns = (
     ),
   },
 
+  // Patient
   {
     id: "patient",
     header: ({ column }) => (
@@ -98,11 +114,13 @@ export const createInvoiceColumns = (
     ),
     cell: ({ row }) => {
       const i = row.original;
-      if (!i.patient) return <span className="text-muted-foreground italic">Aucun</span>;
+      if (!i.patient)
+        return <span className="text-muted-foreground italic">Aucun</span>;
       return `${i.patient.first_name} ${i.patient.last_name}`;
     },
   },
 
+  // Due Date
   {
     accessorKey: "invoice_date",
     header: ({ column }) => (
@@ -118,35 +136,13 @@ export const createInvoiceColumns = (
     cell: ({ row }) => {
       const raw = row.getValue("invoice_date") as string;
       if (!raw) return "-";
-      const parsed = new Date((raw ?? "").toString().replace(" ", "T"));
+      const parsed = new Date(raw.replace(" ", "T"));
       if (isNaN(parsed.getTime())) return "";
       return parsed.toLocaleDateString();
     },
   },
 
-  {
-    id: "services",
-    header: "Services",
-    cell: ({ row }) => {
-      const i = row.original;
-      const items = i.items ?? [];
-      if (items.length === 0) {
-        return <span className="text-muted-foreground">-</span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1 max-w-[420px]">
-          {items.map((it, idx) => (
-            <Badge key={`${it.service_id}-${idx}`} variant="outline">
-              {it.service?.name ?? `#${it.service_id}`}
-            </Badge>
-          ))}
-        </div>
-      );
-    },
-    enableSorting: false,
-    enableHiding: true,
-  },
-
+  // Total
   {
     accessorKey: "total_amount",
     header: ({ column }) => (
@@ -161,10 +157,35 @@ export const createInvoiceColumns = (
     ),
     cell: ({ row }) => {
       const n = Number(row.getValue("total_amount"));
-      return `${n.toFixed(2)} Dhs`;
+      return <span className="font-medium">{n.toFixed(2)} Dhs</span>;
     },
   },
 
+  // ✅ Paid Amount
+  {
+    accessorKey: "paid_amount",
+    header: "Payé",
+    cell: ({ row }) => {
+      const n = Number(row.getValue("paid_amount"));
+      return <span className="text-green-600">{n.toFixed(2)} Dhs</span>;
+    },
+  },
+
+  // ✅ Remaining Amount
+  {
+    accessorKey: "remaining_amount",
+    header: "Reste",
+    cell: ({ row }) => {
+      const n = Number(row.getValue("remaining_amount"));
+      return (
+        <span className={n > 0 ? "text-red-500 font-medium" : "text-muted-foreground"}>
+          {n.toFixed(2)} Dhs
+        </span>
+      );
+    },
+  },
+
+  // ✅ Status (3 States)
   {
     accessorKey: "status",
     header: ({ column }) => (
@@ -178,18 +199,33 @@ export const createInvoiceColumns = (
       />
     ),
     cell: ({ row }) => {
-      const i = row.original;
-      const variant: "success" | "pending" = i.status === "paid" ? "success" : "pending";
-      const label = i.status === "paid" ? "Payée" : "En attente";
-      return <Badge className="capitalize" variant={variant}>{label}</Badge>;
+      const status = row.original.status;
+
+      let variant: "success" | "in_progress" | "pending" = "in_progress";
+      let label = "";
+
+      if (status === "paid") {
+        variant = "success";
+        label = "Payée";
+      } else if (status === "partially_paid") {
+        variant = "in_progress";
+        label = "Partiellement payée";
+      } else {
+        variant = "pending";
+        label = "En attente";
+      }
+
+      return <Badge variant={variant}>{label}</Badge>;
     },
   },
 
+  // Actions
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
       const invoice = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -197,24 +233,39 @@ export const createInvoiceColumns = (
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+
             <DropdownMenuItem onClick={() => opts.onView(invoice)}>
               <Eye className="mr-2 h-4 w-4" />
               Voir
             </DropdownMenuItem>
+
             <DropdownMenuItem onClick={() => opts.onEdit(invoice)}>
               <SquarePen className="mr-2 h-4 w-4" />
               Modifier
             </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={() => opts.onPay(invoice)}>
+              <CreditCard className="mr-2 h-4 w-4" />
+              Payer
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => opts.onSetPending(invoice)}>
-              Marquer en attente
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => opts.onSetPaid(invoice)}>
-              Marquer payée
-            </DropdownMenuItem>
+
+            {invoice.status !== "pending" && (
+              <DropdownMenuItem onClick={() => opts.onSetPending(invoice)}>
+                Marquer en attente
+              </DropdownMenuItem>
+            )}
+
+            {invoice.status !== "paid" && (
+              <DropdownMenuItem onClick={() => opts.onSetPaid(invoice)}>
+                Marquer payée
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
