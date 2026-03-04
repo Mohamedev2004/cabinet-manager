@@ -195,7 +195,7 @@ export function createAppointmentColumns(opts: {
                 <CheckCircle2 className="mr-2 h-4 w-4" /> Confirmer
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onComplete(a)}>
-                <Clock className="mr-2 h-4 w-4" /> Marquer terminé
+                <Clock className="mr-2 h-4 w-4" /> Terminé
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onCancel(a)} variant="destructive">
                 <CircleX className="mr-2 h-4 w-4" /> Annuler

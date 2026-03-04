@@ -17,9 +17,15 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-table-view-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { CalendarDays } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Filters = {
   search?: string;
@@ -127,35 +133,34 @@ export function AppointmentsDataTable<TData, TValue>({
 
             <div className="flex items-center gap-2 flex-wrap">
               {selectedCount > 0 && (
-                <>
-                  <span className="text-sm text-muted-foreground mr-2">{selectedCount} sélectionné(s)</span>
-                  {onConfirmMany && (
-                    <Button
-                      size="sm"
-                      onClick={() => onConfirmMany(selectedIdsAsNumbers)}
-                    >
-                      Confirmer sélection
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      Actions groupées ({selectedCount})
                     </Button>
-                  )}
-                  {onCompleteMany && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onCompleteMany(selectedIdsAsNumbers)}
-                    >
-                      Marquer terminé
-                    </Button>
-                  )}
-                  {onCancelMany && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => onCancelMany(selectedIdsAsNumbers)}
-                    >
-                      Annuler sélection
-                    </Button>
-                  )}
-                </>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {onConfirmMany && (
+                      <DropdownMenuItem onClick={() => onConfirmMany(selectedIdsAsNumbers)}>
+                        Confirmer sélection ({selectedCount})
+                      </DropdownMenuItem>
+                    )}
+                    {onCompleteMany && (
+                      <DropdownMenuItem onClick={() => onCompleteMany(selectedIdsAsNumbers)}>
+                        Marquer terminé ({selectedCount})
+                      </DropdownMenuItem>
+                    )}
+                    {onCancelMany && (
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => onCancelMany(selectedIdsAsNumbers)}
+                        variant="destructive"
+                      >
+                        Annuler sélection ({selectedCount})
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               {onAddClick && (
                 <Button onClick={onAddClick}>
