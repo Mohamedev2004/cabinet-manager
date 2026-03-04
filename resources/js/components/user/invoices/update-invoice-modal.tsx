@@ -110,80 +110,74 @@ export function UpdateInvoiceModal({
       <NativeDialogContent className="sm:max-w-[650px]">
         <NativeDialogHeader>
           <NativeDialogTitle>Modifier la facture</NativeDialogTitle>
-          <NativeDialogDescription>Mettre à jour les informations de la facture.</NativeDialogDescription>
+          <NativeDialogDescription>
+            Mettre à jour les informations de la facture.
+          </NativeDialogDescription>
         </NativeDialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Patient</Label>
-            <div className="col-span-3">
-              <Select
-                value={patientId ? String(patientId) : ""}
-                onValueChange={(v) => setPatientId(Number(v))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Sélectionner un patient" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((p) => (
-                    <SelectItem key={p.id} value={String(p.id)}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Patient */}
+          <div className="grid gap-1">
+            <Label>Patient</Label>
+            <Select value={patientId ? String(patientId) : ""} onValueChange={(v) => setPatientId(Number(v))}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionner un patient" />
+              </SelectTrigger>
+              <SelectContent>
+                {patients.map((p) => (
+                  <SelectItem key={p.id} value={String(p.id)}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Date</Label>
-            <div className="col-span-3">
-              <Input
-                type="date"
-                value={invoiceDate}
-                onChange={(e) => setInvoiceDate(e.target.value)}
-              />
-            </div>
+          {/* Invoice Date */}
+          <div className="grid gap-1">
+            <Label>Date d'échéance</Label>
+            <Input type="date" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
           </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Statut</Label>
-            <div className="col-span-3">
-              <Select value={status} onValueChange={(v) => setStatus(v as "pending" | "paid")}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Statut" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">En attente</SelectItem>
-                  <SelectItem value="paid">Payée</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Status */}
+          <div className="grid gap-1">
+            <Label>Statut</Label>
+            <Select value={status} onValueChange={(v) => setStatus(v as "pending" | "paid")}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Statut" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">En attente</SelectItem>
+                <SelectItem value="paid">Payée</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
+          {/* Items */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Éléments</Label>
-              <Button size="sm" variant="default" onClick={addItem} className="mb-4">
+            <div className="flex items-center justify-between mt-4">
+              <Label>Services</Label>
+              <Button size="sm" variant="default" onClick={addItem}>
                 Ajouter un service
               </Button>
             </div>
+
+            {items.length === 0 && <p className="text-sm text-muted-foreground">Aucun service ajouté.</p>}
+
             <div className="space-y-3">
               {items.map((item, idx) => (
-                <div key={idx} className="grid grid-cols-12 gap-2">
-                  <div className="col-span-7">
+                <div key={idx} className="grid grid-cols-12 gap-2 items-end">
+                  <div className="col-span-7 grid gap-1">
+                    <Label>Service</Label>
                     <Select
                       value={String(item.service_id)}
                       onValueChange={(v) => {
                         const s = services.find((ss) => ss.id === Number(v));
-                        updateItem(idx, {
-                          service_id: Number(v),
-                          unit_price: Number(s?.price ?? 0),
-                        });
+                        updateItem(idx, { service_id: Number(v), unit_price: Number(s?.price ?? 0) });
                       }}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Service" />
+                        <SelectValue placeholder="Sélectionner un service" />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((s) => (
@@ -194,7 +188,9 @@ export function UpdateInvoiceModal({
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-3">
+
+                  <div className="col-span-3 grid gap-1">
+                    <Label>Prix</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -203,16 +199,14 @@ export function UpdateInvoiceModal({
                       onChange={(e) => updateItem(idx, { unit_price: Number(e.target.value) })}
                     />
                   </div>
+
                   <div className="col-span-2 flex justify-end">
                     <Button variant="destructive" onClick={() => removeItem(idx)}>
-                      <Trash2 className="w-4 h-4"/>
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
               ))}
-              {items.length === 0 && (
-                <p className="text-sm text-muted-foreground">Aucun service ajouté.</p>
-              )}
             </div>
           </div>
         </div>

@@ -61,7 +61,7 @@ export function ViewInvoiceModal({ open, onOpenChange, invoice }: Props) {
                 {(invoice.items ?? []).map((it, idx) => (
                   <div key={idx} className="px-3 py-2 flex items-center justify-between text-sm">
                     <div>{it.service?.name ?? `Service #${it.service_id}`}</div>
-                    <div className="font-medium">{Number(it.unit_price).toFixed(2)} DZD</div>
+                    <div className="font-medium">{Number(it.unit_price).toFixed(2)} Dhs</div>
                   </div>
                 ))}
                 {(!invoice.items || invoice.items.length === 0) && (
@@ -70,7 +70,7 @@ export function ViewInvoiceModal({ open, onOpenChange, invoice }: Props) {
               </div>
               <div className="px-3 py-2 flex items-center justify-between font-medium">
                 <div>Total</div>
-                <div>{total.toFixed(2)} DZD</div>
+                <div>{total.toFixed(2)} Dhs</div>
               </div>
             </div>
           </div>

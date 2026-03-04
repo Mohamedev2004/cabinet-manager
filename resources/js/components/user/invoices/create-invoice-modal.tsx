@@ -51,6 +51,7 @@ export default function CreateInvoiceModal({
   const [items, setItems] = useState<InvoiceItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  // ➕ Add a new item
   const addItem = () => {
     const firstService = services[0];
     if (!firstService) return;
@@ -60,14 +61,17 @@ export default function CreateInvoiceModal({
     ]);
   };
 
+  // 🔧 Update an item
   const updateItem = (index: number, patch: Partial<InvoiceItem>) => {
     setItems((prev) => prev.map((it, i) => (i === index ? { ...it, ...patch } : it)));
   };
 
+  // ❌ Remove an item
   const removeItem = (index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // 💾 Submit invoice
   const handleSubmit = () => {
     if (!patientId) {
       toast.error("Sélectionnez un patient");
@@ -102,58 +106,64 @@ export default function CreateInvoiceModal({
 
   return (
     <NativeDialog open={open} onOpenChange={onOpenChange}>
-      <NativeDialogTrigger asChild>
-      </NativeDialogTrigger>
+      <NativeDialogTrigger asChild />
       <NativeDialogContent className="sm:max-w-[650px]">
         <NativeDialogHeader>
           <NativeDialogTitle>Créer une facture</NativeDialogTitle>
-          <NativeDialogDescription>Renseignez les informations de la facture.</NativeDialogDescription>
+          <NativeDialogDescription>
+            Renseignez les informations de la facture.
+          </NativeDialogDescription>
         </NativeDialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Patient</Label>
-            <div className="col-span-3">
-              <Select
-                value={patientId ? String(patientId) : ""}
-                onValueChange={(v) => setPatientId(Number(v))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Sélectionner un patient" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((p) => (
-                    <SelectItem key={p.id} value={String(p.id)}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Patient */}
+          <div className="grid gap-1">
+            <Label>Patient</Label>
+            <Select
+              value={patientId ? String(patientId) : ""}
+              onValueChange={(v) => setPatientId(Number(v))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionner un patient" />
+              </SelectTrigger>
+              <SelectContent>
+                {patients.map((p) => (
+                  <SelectItem key={p.id} value={String(p.id)}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Date</Label>
-            <div className="col-span-3">
-              <Input
-                type="date"
-                value={invoiceDate}
-                onChange={(e) => setInvoiceDate(e.target.value)}
-              />
-            </div>
+          {/* Due Date */}
+          <div className="grid gap-1">
+            <Label>Date d'échéance</Label>
+            <Input
+              type="date"
+              value={invoiceDate}
+              onChange={(e) => setInvoiceDate(e.target.value)}
+            />
           </div>
 
+          {/* Invoice Items */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Éléments</Label>
-              <Button size="sm" variant="default" className="mb-4" onClick={addItem}>
+            <div className="flex items-center justify-between mt-4">
+              <Label>Services</Label>
+              <Button size="sm" variant="default" onClick={addItem}>
                 Ajouter un service
               </Button>
             </div>
+
+            {items.length === 0 && (
+              <p className="text-sm text-muted-foreground">Aucun service ajouté.</p>
+            )}
+
             <div className="space-y-3">
               {items.map((item, idx) => (
-                <div key={idx} className="grid grid-cols-12 gap-2">
-                  <div className="col-span-7">
+                <div key={idx} className="grid grid-cols-12 gap-2 items-end">
+                  <div className="col-span-7 grid gap-1">
+                    <Label>Service</Label>
                     <Select
                       value={String(item.service_id)}
                       onValueChange={(v) => {
@@ -165,7 +175,7 @@ export default function CreateInvoiceModal({
                       }}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Service" />
+                        <SelectValue placeholder="Sélectionner un service" />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((s) => (
@@ -176,7 +186,8 @@ export default function CreateInvoiceModal({
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-3">
+                  <div className="col-span-3 grid gap-1">
+                    <Label>Prix</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -187,14 +198,11 @@ export default function CreateInvoiceModal({
                   </div>
                   <div className="col-span-2 flex justify-end">
                     <Button variant="destructive" onClick={() => removeItem(idx)}>
-                      <Trash2 className="w-4 h-4"/>
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
               ))}
-              {items.length === 0 && (
-                <p className="text-sm text-muted-foreground">Aucun service ajouté.</p>
-              )}
             </div>
           </div>
         </div>

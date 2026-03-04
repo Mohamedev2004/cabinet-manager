@@ -108,7 +108,7 @@ export const createInvoiceColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title="Date"
+        title="Date échéance"
         columnId="invoice_date"
         currentSortBy={opts.currentSortBy}
         currentSortDir={opts.currentSortDir}
@@ -161,7 +161,7 @@ export const createInvoiceColumns = (
     ),
     cell: ({ row }) => {
       const n = Number(row.getValue("total_amount"));
-      return `${n.toFixed(2)} DZD`;
+      return `${n.toFixed(2)} Dhs`;
     },
   },
 
