@@ -107,26 +107,32 @@ export function PatientDataTable<TData>({
           {/* ✅ Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-4 py-4">
             <div className="flex items-center gap-4 flex-1 min-w-[250px]">
-              <Input
-                placeholder="Rechercher un patient..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="max-w-xs"
-              />
-
-              <Select
-                value={filters.trashed ?? "all"}
-                onValueChange={(value) => onFilterChange("trashed", value)}
-              >
-                <SelectTrigger className="w-36">
-                  <SelectValue placeholder="Tous" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">Rechercher</span>
+                <Input
+                  placeholder="Rechercher un patient..."
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  className="max-w-xs"
+                />
+              </div>
+              
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">Statut</span>
+                <Select
+                  value={filters.trashed ?? "all"}
+                  onValueChange={(value) => onFilterChange("trashed", value)}
+                >
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder="Tous" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous</SelectItem>
                   <SelectItem value="actifs">Actifs</SelectItem>
                   <SelectItem value="deleted">Archivés</SelectItem>
                 </SelectContent>
               </Select>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">

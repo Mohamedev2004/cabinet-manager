@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\KanbanController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -80,6 +82,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/selected/pending', [TaskController::class, 'setSelectedPending'])->name('setSelectedPending');
         });
 
+        // INVOICES
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index');
+            Route::post('/', [InvoiceController::class, 'store'])->name('store');
+            Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
+            Route::put('/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/selected/pending', [InvoiceController::class, 'setSelectedPending'])->name('setSelectedPending');
+            Route::post('/selected/paid', [InvoiceController::class, 'setSelectedPaid'])->name('setSelectedPaid');
+            Route::get('/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('download');
+        });
+
         // CONTACTS
         Route::prefix('contacts')->name('contacts.')->group(function () {
             Route::get('/', [ContactController::class, 'index'])->name('index');
@@ -113,6 +126,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
             Route::post('/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
             Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
+        });
+
+        // SERVICES
+        Route::prefix('services')->name('services.')->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('index');
+            Route::get('/create', [ServiceController::class, 'create'])->name('create');
+            Route::post('/', [ServiceController::class, 'store'])->name('store');
+            Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
+            Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+            Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+            Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/restore', [ServiceController::class, 'restore'])->name('restore');
         });
     });
 });

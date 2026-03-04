@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\NotifyUpcomingInvoices;
 use App\Console\Commands\UpdateOverdueTasks;
 use App\Console\Commands\WarnUpcomingTasks;
 use Illuminate\Foundation\Inspiring;
@@ -10,5 +11,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+Schedule::command(NotifyUpcomingInvoices::class)->daily();
 Schedule::command(UpdateOverdueTasks::class)->daily();
 Schedule::command(WarnUpcomingTasks::class)->everyMinute();

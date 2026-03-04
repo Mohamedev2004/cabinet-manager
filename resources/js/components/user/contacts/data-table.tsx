@@ -105,12 +105,15 @@ export function ContactsDataTable<TData, TValue>({
         <div className="rounded-lg mt-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between mb-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
-              <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Rechercher..."
-                className="w-[240px]"
-              />
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">Rechercher</span>
+                <Input
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Rechercher..."
+                  className="w-[240px]"
+                />
+                </div>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">

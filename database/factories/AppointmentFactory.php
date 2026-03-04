@@ -15,7 +15,7 @@ class AppointmentFactory extends Factory
             'full_name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'email' => $this->faker->optional()->safeEmail(),
-            'appointment_date' => Carbon::now()->addDays(rand(1, 30)),
+            'appointment_date' => Carbon::now()->addDays(rand(1, 30))->format('Y-m-d'),
             'status' => $this->faker->randomElement($statuses),
             'note' => $this->faker->optional()->sentence(),
         ];

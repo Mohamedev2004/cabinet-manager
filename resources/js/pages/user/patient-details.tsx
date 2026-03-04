@@ -26,6 +26,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { ReportDataTable } from "@/components/user/patient-reports/data-table";
+import PatientInvoiceSection from "@/components/user/patients/patient-invoice";
 import { createReportColumns } from "@/components/user/patient-reports/columns";
 
 interface Patient {
@@ -55,9 +56,18 @@ interface Props {
     sortDir?: string;
     perPage?: number;
   };
+  patientInvoices?: any;
+  invoiceFilters?: {
+    search?: string;
+    status?: string;
+    sortBy?: string;
+    sortDir?: "asc" | "desc";
+    perPage?: number;
+  };
+  invoiceServices?: { id: number; name: string; price?: number | null }[];
 }
 
-export default function PatientDetails({ patient, reports, filters }: Props) {
+export default function PatientDetails({ patient, reports, filters, patientInvoices, invoiceFilters, invoiceServices }: Props) {
   const handleSortChange = useCallback((sortBy: string, sortDir: "asc" | "desc") => {
     router.get(
       route("patients.show", patient.id),
@@ -209,7 +219,7 @@ export default function PatientDetails({ patient, reports, filters }: Props) {
         </div>
 
         {/* ================= REPORTS SECTION ================= */}
-        <div>
+        <Card className="bg-sidebar px-4">
           <h3 className="text-xl font-semibold mb-4">Rapports</h3>
 
           {reportData.length === 0 ? (
@@ -249,7 +259,29 @@ export default function PatientDetails({ patient, reports, filters }: Props) {
               onAddClick={() => router.visit(route("patients.report.create", patient.id))}
             />
           )}
-        </div>
+        </Card>
+
+        {/* ================= INVOICES SECTION ================= */}
+        <Card className="bg-sidebar px-4">
+          <CardHeader className="px-0">
+            <CardTitle className="text-xl">Factures</CardTitle>
+            <CardDescription>Historique des factures et paiements du patient</CardDescription>
+          </CardHeader>
+
+          <PatientInvoiceSection
+            patientId={patient.id}
+            patientName={`${patient.first_name} ${patient.last_name}`}
+            invoices={patientInvoices}
+            filters={{
+              search: invoiceFilters?.search,
+              status: invoiceFilters?.status,
+              sortBy: invoiceFilters?.sortBy,
+              sortDir: (invoiceFilters?.sortDir as any) ?? "desc",
+              perPage: invoiceFilters?.perPage,
+            }}
+            services={invoiceServices ?? []}
+          />
+        </Card>
       </div>
 
       <UpdatePatientBasicModal

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Spatie\LaravelPdf\Facades\Pdf;
 
@@ -13,7 +15,7 @@ class ReportController extends Controller
 {
     public function create(Patient $patient)
     {
-        return Inertia::render('user/patient-report-create', [
+        return Inertia::render('user/create-patient-report', [
             'patient' => $patient,
         ]);
     }
@@ -39,24 +41,29 @@ class ReportController extends Controller
         // 2️⃣ Create the report
         $report = $patient->reports()->create($validated);
 
-        // 3️⃣ Generate the PDF using Spatie
-        $pdfFileName = 'report_'.$report->id.'_'.time().'.pdf';
-        $pdfRelativePath = 'reports/'.$pdfFileName; // Relative to storage/app/public
+        // 3️⃣ Generate UNIQUE filename using UUID
+        $pdfFileName = Str::uuid() . '.pdf';
 
-        // Make sure the "reports" folder exists in public disk
-        Storage::disk('public')->makeDirectory('reports');
+        // Store inside patient-specific folder
+        $pdfRelativePath = 'reports/' . $patient->id . '/' . $pdfFileName;
 
-        // Generate the PDF and save to storage/app/public/reports
+        // Ensure directory exists
+        Storage::disk('public')->makeDirectory('reports/' . $patient->id);
+
+        // 4️⃣ Generate and save PDF
         Pdf::view('reports.pdf', [
             'patient' => $patient,
             'report' => $report,
-        ])
-            ->save(Storage::disk('public')->path($pdfRelativePath));
+        ])->save(
+            Storage::disk('public')->path($pdfRelativePath)
+        );
 
-        // 4️⃣ Update the report with pdf_path
-        $report->update(['pdf_path' => $pdfRelativePath]);
+        // 5️⃣ Save path in database
+        $report->update([
+            'pdf_path' => $pdfRelativePath
+        ]);
 
-        // 5️⃣ Redirect back
+        // 6️⃣ Redirect back
         return redirect()
             ->route('patients.show', $patient->id)
             ->with('success', 'Rapport créé avec succès et PDF généré.');
@@ -94,6 +101,9 @@ class ReportController extends Controller
             abort(404, 'PDF non trouvé.');
         }
 
-        return Storage::disk('public')->download($report->pdf_path);
+        return Response::download(
+            Storage::disk('public')->path($report->pdf_path),
+            'rapport.pdf'
+        );
     }
 }

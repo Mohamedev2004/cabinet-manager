@@ -62,12 +62,15 @@ export function ReportDataTable<TData>({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col">
+        <span className="text-xs text-muted-foreground">Rechercher</span>
         <Input
           placeholder="Rechercher par numéro (ex: 1)..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           className="max-w-xs"
         />
+        </div>
         {onAddClick && (
           <Button onClick={onAddClick}>
             <Plus className="w-4 h-4 mr-2" />
