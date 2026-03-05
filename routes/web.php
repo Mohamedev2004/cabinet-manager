@@ -142,4 +142,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+Route::fallback(function () {
+    return Inertia::render('errors/not-found')
+        ->toResponse(request())
+        ->setStatusCode(404);
+});
+
 require __DIR__.'/settings.php';
