@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Task extends Model
 {
@@ -20,5 +21,16 @@ class Task extends Model
     public function patient()
     {
         return $this->belongsTo(Patient::class);
+    }
+
+    protected static function booted()
+    {
+        static::saved(function () {
+            Cache::tags(['dashboard'])->flush();
+        });
+
+        static::deleted(function () {
+            Cache::tags(['dashboard'])->flush();
+        });
     }
 }
