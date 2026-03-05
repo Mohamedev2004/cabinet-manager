@@ -149,7 +149,9 @@ export default function PatientInvoiceSection({ patientId, invoices, filters, se
   const singlePatient = [{ id: patientId, name: patientName }];
 
   return (
-    <div>
+    <div className="mt-10">
+      <h3 className="text-xl font-semibold mb-4">Factures</h3>
+
       <InvoicesDataTable
         columns={columns}
         data={data}
