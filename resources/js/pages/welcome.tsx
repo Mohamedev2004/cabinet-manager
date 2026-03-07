@@ -1,81 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+import { Head } from '@inertiajs/react';
+import Hero from '@/components/welcome-page-components/hero';
+import Services from '@/components/welcome-page-components/services';
+import Layout from '@/layouts';
 
-import { Head, Link, usePage, router } from "@inertiajs/react";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import AuthLayout from "@/layouts/auth-layout";
-import { login } from "@/routes";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+const Home = () => {
+    return (
+        <Layout>
+            <Head title="Welcome" />
+            <Hero />
+            <Services />
+        </Layout>
+    );
+};
 
-interface PageProps {
-  auth?: {
-    user?: User | null;
-  };
-  flash?: {
-    error?: string;
-    [key: string]: any;
-  };
-  [key: string]: any;
-}
-
-export default function Welcome() {
-  const { props } = usePage<PageProps>();
-  const user = props.auth?.user;
-  const flashError = props.flash?.error;
-
-  const handleLogout = () => {
-    router.post("/logout");
-  };
-
-  return (
-    <AuthLayout
-      title={user ? `Welcome back, ${user.name}!` : "Welcome to your App"}
-      description={
-        user
-          ? "Everything you do daily, organized in one living dashboard."
-          : "Everything you do daily, organized in one living dashboard."
-      }
-    >
-      <Head title="Welcome" />
-
-      <div className="flex flex-col items-center justify-center gap-6">
-        {flashError && (
-          <p className="text-red-600 font-semibold text-center">{flashError}</p>
-        )}
-
-        {user ? (
-          <>
-            <p className="text-center text-muted-foreground">
-              You're already logged in.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className='' asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut />
-                Logout
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild variant="default">
-                <Link href={login()}>Log in</Link>
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
-    </AuthLayout>
-  );
-}
+export default Home;
