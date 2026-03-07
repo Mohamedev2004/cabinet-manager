@@ -55,7 +55,7 @@ const Services = () => {
 
   return (
     <section className="mt-4 p-8 lg:p-14 rounded-xl bg-white">
-      <div className="container flex flex-col items-left gap-16">
+      <div className="flex flex-col items-left gap-16">
 
         {/* Heading */}
         <motion.header

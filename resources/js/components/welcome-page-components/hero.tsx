@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 const Hero = () => {
   return (
     <section className="">
-      <div className="container p-4 lg:p-14 bg-white rounded-xl">
+      <div className="p-4 lg:p-14 bg-white rounded-xl">
         <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
           
           <div className="flex flex-col items-center gap-5 text-center lg:items-start lg:text-left">

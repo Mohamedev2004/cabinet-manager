@@ -20,7 +20,7 @@ const cardVariants: Variants = {
 export default function Content() {
   return (
     <section className="mt-4">
-      <div className="mx-auto container bg-white p-8 lg:p-14 rounded-xl">
+      <div className="mx-auto bg-white p-8 lg:p-14 rounded-xl">
         
         <Badge className="mb-6">
           Content

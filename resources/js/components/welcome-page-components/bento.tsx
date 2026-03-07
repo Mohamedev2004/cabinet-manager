@@ -123,7 +123,7 @@ export function Bento() {
             About Us
             <Grid className="ml-2 size-4" />
           </Badge>
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-left text-foreground md:text-4xl lg:text-5xl">
             Bento storytelling built for modern motion systems
           </h2>
           <p className="max-w-2xl text-base text-foreground/70 md:text-lg text-justify">
