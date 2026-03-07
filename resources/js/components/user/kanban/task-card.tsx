@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Clock } from "lucide-react";
+import { memo, useMemo } from "react";
 
 export type Id = string | number;
 
@@ -29,7 +30,19 @@ interface TaskCardProps {
   isOverlay?: boolean;
 }
 
-export function TaskCard({ task, isOverlay }: TaskCardProps) {
+const priorityColors = {
+  low: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+  medium: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
+  high: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+} as const;
+
+const priorityLabels = {
+  low: "Basse",
+  medium: "Moyenne",
+  high: "Haute",
+} as const;
+
+function TaskCardComponent({ task, isOverlay }: TaskCardProps) {
   const {
     setNodeRef,
     attributes,
@@ -51,19 +64,8 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     transform: CSS.Translate.toString(transform),
   };
 
-  const priorityColors = {
-    low: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-    medium: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20",
-    high: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
-  };
-
-  const priorityLabels = {
-    low: "Basse",
-    medium: "Moyenne",
-    high: "Haute",
-  };
-
-  const formatDate = (dateString: string) => {
+  const formattedDate = useMemo(() => {
+    const dateString = task.due_date;
     if (!dateString) return "";
     try {
       const date = new Date(dateString);
@@ -75,7 +77,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     } catch (e) {
       return dateString;
     }
-  };
+  }, [task.due_date]);
 
   return (
     <div
@@ -84,9 +86,9 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
       {...attributes}
       {...listeners}
       className={cn(
-        "group relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border/40 bg-background/70 p-4 shadow-lg backdrop-blur-xl transition-all hover:border-border/60 hover:shadow-xl hover:-translate-y-1",
+        "group relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border/40 bg-background/70 p-4 shadow-lg backdrop-blur-xl transition-all hover:border-border/60 hover:shadow-xl hover:-translate-y-1 will-change-transform",
         task.status !== "overdue" ? "cursor-grab active:cursor-grabbing" : "cursor-default",
-        isDragging && "opacity-30",
+        isDragging && "opacity-0",
         isOverlay && "rotate-2 scale-105 shadow-2xl cursor-grabbing opacity-100 bg-background/90 backdrop-blur-xl z-50"
       )}
     >
@@ -121,7 +123,7 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
           {task.due_date && (
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{formatDate(task.due_date)}</span>
+              <span>{formattedDate}</span>
             </div>
           )}
         </div>
@@ -135,3 +137,21 @@ export function TaskCard({ task, isOverlay }: TaskCardProps) {
     </div>
   );
 }
+
+function areEqualTask(prev: TaskCardProps, next: TaskCardProps) {
+  const a = prev.task;
+  const b = next.task;
+  if (prev.isOverlay !== next.isOverlay) return false;
+  if (a.id !== b.id) return false;
+  if (a.status !== b.status) return false;
+  if (a.title !== b.title) return false;
+  if (a.description !== b.description) return false;
+  if (a.priority !== b.priority) return false;
+  if (a.due_date !== b.due_date) return false;
+  const aPatient = a.patient ? `${a.patient.id}-${a.patient.name}` : "";
+  const bPatient = b.patient ? `${b.patient.id}-${b.patient.name}` : "";
+  if (aPatient !== bPatient) return false;
+  return true;
+}
+
+export const TaskCard = memo(TaskCardComponent, areEqualTask);

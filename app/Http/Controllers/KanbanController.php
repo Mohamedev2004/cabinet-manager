@@ -19,7 +19,7 @@ class KanbanController extends Controller
         // If it's an Inertia partial request for a specific column (infinite scroll)
         if ($request->has('status') && in_array($request->status, $statuses)) {
             $status = $request->status;
-            $perPage = 20;
+            $perPage = 8;
             $page = $request->input('page', 1);
 
             $cacheKey = "tasks:status:$status:page:$page";
@@ -59,7 +59,7 @@ class KanbanController extends Controller
                 return Task::with('patient')
                     ->where('status', $status)
                     ->orderByDesc('due_date')
-                    ->paginate(20, ['*'], 'page', 1)
+                    ->paginate(8, ['*'], 'page', 1)
                     ->through(fn ($task) => [
                         'id' => $task->id,
                         'title' => $task->title,

@@ -26,7 +26,8 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import { Head, router } from "@inertiajs/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import CreateTaskSheet from "@/components/user/tasks/create-task-modal";
 import { BoardColumn, Column } from "@/components/user/kanban/board-column";
@@ -185,13 +186,25 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const filteredTasks = useMemo(() => {
-    if (!searchQuery) return tasks;
-    return tasks.filter((task) =>
-      task.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return tasks;
+    return tasks.filter((task) => task.title.toLowerCase().includes(q));
   }, [tasks, searchQuery]);
 
-  function onDragStart(event: DragStartEvent) {
+  const tasksByStatus = useMemo(() => {
+    const map: Record<"pending" | "in_progress" | "done" | "overdue", Task[]> = {
+      pending: [],
+      in_progress: [],
+      done: [],
+      overdue: [],
+    };
+    for (const t of filteredTasks) {
+      map[t.status].push(t);
+    }
+    return map;
+  }, [filteredTasks]);
+
+  const onDragStart = useCallback((event: DragStartEvent) => {
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current.column);
       return;
@@ -203,9 +216,9 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
       setOriginalStatus(task.status);
       return;
     }
-  }
+  }, []);
 
-  function onDragOver(event: DragOverEvent) {
+  const onDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -263,10 +276,10 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
 
       return prevTasks;
     });
-  }
+  }, []);
 
 
-  function onDragEnd(event: DragEndEvent) {
+  const onDragEnd = useCallback((event: DragEndEvent) => {
     setActiveColumn(null);
     setActiveTask(null);
 
@@ -325,7 +338,7 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
     }
 
     setOriginalStatus(null);
-  }
+  }, [originalStatus, tasks]);
 
 
   const dropAnimation: DropAnimation = {
@@ -388,7 +401,7 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
                 <div key={col.id} className="h-full flex flex-col">
                   <BoardColumn
                     column={col}
-                    tasks={filteredTasks.filter((task) => task.status === col.id)}
+                    tasks={tasksByStatus[col.id as "pending" | "in_progress" | "done" | "overdue"]}
                     loading={loading}
                     onAddTask={onAddTask}
                   />
@@ -418,16 +431,19 @@ export default function KanbanBoard({ initialTasks, patients }: KanbanBoardProps
         />
 
         {/* Drag Overlay */}
-        <DragOverlay dropAnimation={dropAnimation}>
-          {activeColumn && (
-            <BoardColumn
-              column={activeColumn}
-              tasks={tasks.filter((task) => task.status === activeColumn.id)}
-              isOverlay
-            />
-          )}
-          {activeTask && <TaskCard task={activeTask} isOverlay />}
-        </DragOverlay>
+        {createPortal(
+          <DragOverlay dropAnimation={dropAnimation}>
+            {activeColumn && (
+              <BoardColumn
+                column={activeColumn}
+                tasks={tasksByStatus[activeColumn.id as "pending" | "in_progress" | "done" | "overdue"]}
+                isOverlay
+              />
+            )}
+            {activeTask && <TaskCard task={activeTask} isOverlay />}
+          </DragOverlay>,
+          document.body
+        )}
       </DndContext>
       </div>
     </AppLayout>

@@ -123,7 +123,7 @@ export function Bento() {
             About Us
             <Grid className="ml-2 size-4" />
           </Badge>
-          <h2 className="text-3xl font-semibold tracking-tight text-left text-foreground md:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
             Bento storytelling built for modern motion systems
           </h2>
           <p className="max-w-2xl text-base text-foreground/70 md:text-lg text-justify">
@@ -235,20 +235,14 @@ export function Bento() {
             role="article"
             aria-label="Behind the scenes studio imagery"
           >
-            <motion.div
-              className="absolute inset-0"
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-            >
+            <div className="absolute inset-0">
               <img
                 src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80"
                 alt="Designer workstation lit with cinematic lighting"
                 className="h-full w-full object-cover opacity-80"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-            </motion.div>
+            </div>
             <div className="relative flex h-full flex-col justify-end space-y-4 p-6 md:p-8">
               <Badge>
                 Behind the scenes
@@ -332,19 +326,11 @@ export function Bento() {
             aria-label="Motion showcase video"
           >
             <div className="relative h-full">
-              <motion.div
-                className="absolute inset-0"
-                initial={{ clipPath: "inset(0 0 100% 0)" }}
-                whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
-                  alt="Motion design workspace with monitors"
-                  className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
-                />
-              </motion.div>
+              <img
+                src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
+                alt="Motion design workspace with monitors"
+                className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
+              />
               <div className="relative flex h-full flex-col justify-between bg-gradient-to-br from-background/90 via-background/70 to-transparent p-6 md:p-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -403,20 +389,16 @@ export function Bento() {
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">
               {inspirationGallery.map((image) => (
-                <motion.div
+                <div
                   key={image.src}
                   className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border/30 bg-background/60"
-                  initial={{ clipPath: "inset(0 0 100% 0)" }}
-                  whileInView={{ clipPath: "inset(0 0 0% 0)" }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
                 >
                   <img
                     src={image.src}
                     alt={image.alt}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
           </motion.article>

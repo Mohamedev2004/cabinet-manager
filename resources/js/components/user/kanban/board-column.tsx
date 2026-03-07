@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Plus } from "lucide-react";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Task, TaskCard } from "./task-card";
 
 export type Id = string | number;
@@ -27,7 +27,7 @@ interface BoardColumnProps {
   onAddTask?: () => void;
 }
 
-export function BoardColumn({ column, tasks, isOverlay, loading, onAddTask }: BoardColumnProps) {
+function BoardColumnComponent({ column, tasks, isOverlay, loading, onAddTask }: BoardColumnProps) {
   const {
     setNodeRef,
     attributes,
@@ -56,7 +56,7 @@ export function BoardColumn({ column, tasks, isOverlay, loading, onAddTask }: Bo
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group/column relative flex h-full w-[350px] min-w-[350px] flex-col overflow-hidden rounded-2xl border border-border/40 bg-sidebar backdrop-blur-xl shadow-lg m-auto",
+        "group/column relative flex h-full w-[350px] min-w-[350px] flex-col overflow-hidden rounded-2xl border border-border/40 bg-sidebar backdrop-blur-xl shadow-lg m-auto will-change-transform",
         isDragging && "opacity-50",
         isOverlay && "rotate-2 scale-105 shadow-2xl cursor-grabbing bg-background/70"
       )}
@@ -106,3 +106,19 @@ export function BoardColumn({ column, tasks, isOverlay, loading, onAddTask }: Bo
     </div>
   );
 }
+
+function areEqualColumn(prev: BoardColumnProps, next: BoardColumnProps) {
+  if (prev.loading !== next.loading) return false;
+  if (prev.isOverlay !== next.isOverlay) return false;
+  if (prev.column.id !== next.column.id) return false;
+  if (prev.column.title !== next.column.title) return false;
+  const a = prev.tasks;
+  const b = next.tasks;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i].id !== b[i].id) return false;
+  }
+  return true;
+}
+
+export const BoardColumn = memo(BoardColumnComponent, areEqualColumn);

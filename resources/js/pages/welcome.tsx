@@ -5,6 +5,7 @@ import { Cta } from '@/components/welcome-page-components/cta';
 import Hero from '@/components/welcome-page-components/hero';
 import { Portfolio } from '@/components/welcome-page-components/portfolio';
 import Services from '@/components/welcome-page-components/services';
+import Testimonials from '@/components/welcome-page-components/testimonials';
 import Layout from '@/layouts';
 
 
@@ -17,6 +18,7 @@ const Home = () => {
             <Bento />
             <Portfolio />
             <Content />
+            <Testimonials />
             <Cta />
         </Layout>
     );
