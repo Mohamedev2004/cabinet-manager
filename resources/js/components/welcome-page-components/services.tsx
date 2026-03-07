@@ -1,11 +1,10 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 
 const Services = () => {
-  // Hardcoded posts
   const posts = [
     {
       id: "1",
@@ -34,20 +33,25 @@ const Services = () => {
   ];
 
   return (
-    <section className="py-4">
+    <section className="mt-4 p-8 lg:p-14 rounded-xl bg-white">
       <div className="container flex flex-col items-left gap-16">
+
         {/* Heading */}
         <div className="text-left">
           <Badge className="mb-6">
             Nos Services
+            <ArrowUpRight className="ml-2 size-4" />
           </Badge>
+
           <h2 className="mb-3 text-3xl font-semibold text-pretty md:mb-4 md:text-4xl lg:mb-6 lg:max-w-3xl lg:text-5xl">
             Accompagner votre réussite avec sagesse
           </h2>
-          <p className="mb-8 text-muted-foreground md:text-base lg:max-w-2xl lg:text-lg">
+
+          <p className="mb-8 text-justify text-muted-foreground md:text-base lg:max-w-2xl lg:text-lg">
             Découvrez nos solutions personnalisées pour les organisations et les individus,
             combinant conseil, formation et accompagnement sur mesure.
           </p>
+
           <Button className="w-full sm:w-auto" asChild>
             <a href="#">
               Voir tous les services
@@ -72,23 +76,28 @@ const Services = () => {
                   />
                 </a>
               </div>
+
               <CardHeader>
                 <h3 className="text-lg font-semibold hover:underline md:text-xl">
                   <a href={post.url}>{post.title}</a>
                 </h3>
               </CardHeader>
+
               <CardContent>
                 <p className="text-muted-foreground">{post.summary}</p>
               </CardContent>
+
               <CardFooter>
                 <a href={post.url} className="flex items-center text-foreground hover:underline">
                   En savoir plus
                   <ArrowRight className="ml-2 size-4" />
                 </a>
               </CardFooter>
+
             </Card>
           ))}
         </div>
+
       </div>
     </section>
   );
