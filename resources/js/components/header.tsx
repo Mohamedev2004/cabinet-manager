@@ -21,7 +21,7 @@ import { Link } from "@inertiajs/react";
 
 const Header = () => {
   return (
-    <section className="px-4 mt-3 top-1 sticky z-50">
+    <section className="px-4 mt-2 top-1 sticky z-50">
       <div className="bg-white lg:px-12 px-4 py-4 rounded-md">
         <nav className="flex items-center justify-between">
           

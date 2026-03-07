@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { Bento } from '@/components/welcome-page-components/bento';
+import Content from '@/components/welcome-page-components/content';
 import { Cta } from '@/components/welcome-page-components/cta';
 import Hero from '@/components/welcome-page-components/hero';
 import { Portfolio } from '@/components/welcome-page-components/portfolio';
@@ -15,6 +16,7 @@ const Home = () => {
             <Services />
             <Bento />
             <Portfolio />
+            <Content />
             <Cta />
         </Layout>
     );

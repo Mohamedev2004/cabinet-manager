@@ -1,12 +1,30 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Grid, X, ZoomIn } from "lucide-react";
 import type { KeyboardEvent} from "react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
 
 const galleryImages = [
   {
@@ -114,10 +132,11 @@ export function Portfolio() {
       aria-labelledby="gallery-heading"
     >
       <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+        <motion.header
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           className="mb-12 text-left"
           role="region"
           aria-labelledby="gallery-heading"
@@ -135,13 +154,14 @@ export function Portfolio() {
           <p className="mb-8 text-justify text-muted-foreground md:text-base lg:max-w-2xl lg:text-lg">
             Explore our collection of stunning visuals and creative work
           </p>
-        </motion.div>
+        </motion.header>
 
         {/* Filter Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <motion.div 
+          variants={sectionVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
           className="mb-8 flex flex-wrap justify-center gap-2"
           role="group"
           aria-label="Gallery categories"
@@ -162,19 +182,35 @@ export function Portfolio() {
         {/* Gallery Grid */}
         <motion.div
           layout
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            hidden: { opacity: 0, y: 24 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: {
+                duration: 0.6,
+                ease: "easeOut",
+                staggerChildren: 0.08,
+                delayChildren: 0.12,
+              },
+            },
+          }}
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           role="list"
           aria-label="Gallery items"
         >
           <AnimatePresence mode="popLayout">
-            {filteredImages.map((image, index) => (
-              <motion.div
+            {filteredImages.map((image) => (
+              <motion.article
                 key={image.id}
                 layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
+                variants={cardVariants}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
                 role="listitem"
               >
                 <Card
@@ -210,7 +246,7 @@ export function Portfolio() {
                     </motion.div>
                   </div>
                 </Card>
-              </motion.div>
+              </motion.article>
             ))}
           </AnimatePresence>
         </motion.div>

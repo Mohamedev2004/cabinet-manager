@@ -6,11 +6,6 @@ import { ArrowUpRight, Grid, PlayCircle, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-interface AvatarProfile {
-  src: string;
-  alt: string;
-}
-
 interface Metric {
   label: string;
   value: string;
@@ -30,21 +25,6 @@ interface GalleryImage {
 interface ReelStat {
   label: string;
 }
-
-const avatarProfiles: AvatarProfile[] = [
-  {
-    src: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=200&h=200&fit=crop&q=80",
-    alt: "Portrait of a motion designer smiling at the camera",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=200&fit=crop&q=80",
-    alt: "Portrait of a product strategist in a studio",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop&q=80",
-    alt: "Portrait of a UX researcher wearing headphones",
-  },
-];
 
 const keyMetrics: Metric[] = [
   {
@@ -197,25 +177,6 @@ export function Bento() {
                 </p>
               </div>
               <div className="mt-8 flex items-center justify-between gap-4">
-                <div
-                  className="flex -space-x-3"
-                  role="list"
-                  aria-label="Project team avatars"
-                >
-                  {avatarProfiles.map((profile) => (
-                    <div
-                      key={profile.src}
-                      role="listitem"
-                      className="relative h-11 w-11 overflow-hidden rounded-full border border-border/50 bg-background/80 transition-transform duration-300 group-hover:scale-[1.04]"
-                    >
-                      <img
-                        src={profile.src}
-                        alt={profile.alt}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
                 <Button
                   aria-label="View the featured case study"
                 >
@@ -274,14 +235,20 @@ export function Bento() {
             role="article"
             aria-label="Behind the scenes studio imagery"
           >
-            <div className="absolute inset-0">
+            <motion.div
+              className="absolute inset-0"
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              whileInView={{ clipPath: "inset(0 0 0% 0)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            >
               <img
                 src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80"
                 alt="Designer workstation lit with cinematic lighting"
                 className="h-full w-full object-cover opacity-80"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-            </div>
+            </motion.div>
             <div className="relative flex h-full flex-col justify-end space-y-4 p-6 md:p-8">
               <Badge>
                 Behind the scenes
@@ -365,11 +332,19 @@ export function Bento() {
             aria-label="Motion showcase video"
           >
             <div className="relative h-full">
-              <img
-                src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
-                alt="Motion design workspace with monitors"
-                className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
-              />
+              <motion.div
+                className="absolute inset-0"
+                initial={{ clipPath: "inset(0 0 100% 0)" }}
+                whileInView={{ clipPath: "inset(0 0 0% 0)" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
+                  alt="Motion design workspace with monitors"
+                  className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
+                />
+              </motion.div>
               <div className="relative flex h-full flex-col justify-between bg-gradient-to-br from-background/90 via-background/70 to-transparent p-6 md:p-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -428,16 +403,20 @@ export function Bento() {
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">
               {inspirationGallery.map((image) => (
-                <div
+                <motion.div
                   key={image.src}
                   className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border/30 bg-background/60"
+                  initial={{ clipPath: "inset(0 0 100% 0)" }}
+                  whileInView={{ clipPath: "inset(0 0 0% 0)" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
                 >
                   <img
                     src={image.src}
                     alt={image.alt}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.article>
