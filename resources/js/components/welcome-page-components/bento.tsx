@@ -242,6 +242,13 @@ export function Bento() {
                 className="h-full w-full object-cover opacity-80"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+              <motion.div
+                className="absolute inset-0 bg-white dark:bg-neutral-950"
+                initial={{ y: 0 }}
+                whileInView={{ y: "100%" }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
             </div>
             <div className="relative flex h-full flex-col justify-end space-y-4 p-6 md:p-8">
               <Badge>
@@ -331,6 +338,13 @@ export function Bento() {
                 alt="Motion design workspace with monitors"
                 className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
               />
+              <motion.div
+                className="absolute inset-0 bg-white dark:bg-neutral-950"
+                initial={{ y: 0 }}
+                whileInView={{ y: "100%" }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
               <div className="relative flex h-full flex-col justify-between bg-gradient-to-br from-background/90 via-background/70 to-transparent p-6 md:p-8">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -397,6 +411,13 @@ export function Bento() {
                     src={image.src}
                     alt={image.alt}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <motion.div
+                    className="absolute inset-0 bg-white dark:bg-neutral-950"
+                    initial={{ y: 0 }}
+                    whileInView={{ y: "100%" }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
                   />
                 </div>
               ))}
