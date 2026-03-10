@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import type { BreadcrumbItem } from '@/types';
+import { Upload } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -75,8 +76,23 @@ export default function Informations({ settings }: { settings: any }) {
           <form onSubmit={submit} className="space-y-6">
             {/* Grid wrapper for 2-column layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Logo */}
+
+              {/* Company Name */}
               <div>
+                <Label htmlFor="name">Company Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={form.data.name}
+                  onChange={(e) => form.setData('name', e.target.value)}
+                  className="mt-1 block w-full"
+                />
+                <InputError message={form.errors.name} />
+              </div>
+
+
+              {/* Logo */}
+              <div className='flex items-center justify-center'>
                 <div className="group w-20 relative mt-2 border-2 border-dashed border-gray-300 hover:border-black rounded-xl p-1 transition-colors text-center cursor-pointer bg-gray-50 hover:bg-gray-100">
                     <Input
                     type="file"
@@ -94,27 +110,14 @@ export default function Informations({ settings }: { settings: any }) {
                         />
                     </div>
                     ) : (
-                    <div className="h-28 flex flex-col items-center justify-center text-gray-400">
+                    <div className="h-20 flex flex-col items-center justify-center text-gray-400">
                         {/* Replace with your Upload icon component if you have one */}
-                        <span className="text-2xl mb-2">📤</span>
-                        <span className="text-sm">Upload Logo</span>
+                        <span className="text-2xl mb-2"><Upload /></span>
+                        <span className="text-xs">Upload Logo</span>
                     </div>
                     )}
                 </div>
                 <InputError message={form.errors.logo} />
-              </div>
-
-              {/* Company Name */}
-              <div>
-                <Label htmlFor="name">Company Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={form.data.name}
-                  onChange={(e) => form.setData('name', e.target.value)}
-                  className="mt-1 block w-full"
-                />
-                <InputError message={form.errors.name} />
               </div>
 
               {/* Address */}
