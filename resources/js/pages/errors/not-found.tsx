@@ -21,7 +21,7 @@ export default function NotFound() {
       <Head title="404 - Page non trouvée" />
 
       <div className="flex flex-col gap-6">
-        <div className="grid gap-6 text-center">
+        <div className="grid gap-4 text-center">
           
           {/* 404 Code */}
           <div className="text-7xl font-bold tracking-tight text-primary">
@@ -39,7 +39,7 @@ export default function NotFound() {
           </div>
 
           {/* Primary Action */}
-          <Button asChild className="w-full mt-2">
+          <Button asChild className="w-full">
             <Link href={isAuthenticated ? route("dashboard") : "/"}>
               {isAuthenticated ? "Aller au tableau de bord" : "Retour à l’accueil"}
             </Link>

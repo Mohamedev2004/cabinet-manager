@@ -292,7 +292,7 @@ export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 dashboard.definition = {
     methods: ["get","head"],
-    url: '/dashboard',
+    url: '/admin/dashboard',
 } satisfies RouteDefinition<["get","head"]>
 
 /**

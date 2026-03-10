@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\LaravelPdf\Facades\Pdf;
+use Spatie\Browsershot\Browsershot;
 
 class InvoiceFactory extends Factory
 {
@@ -38,14 +39,15 @@ class InvoiceFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'partially_paid',
-            'paid_amount' => $amount ?? 50, // Temporary, will be recalculated in configure
+            'paid_amount' => $amount ?? 50,
         ]);
     }
 
     public function configure()
     {
         return $this->afterCreating(function (Invoice $invoice) {
-            // Get random services (1 to 3 services per invoice)
+
+            // Get random services (1–3 services)
             $services = Service::inRandomOrder()->take(rand(1, 3))->get();
 
             if ($services->isEmpty()) {
@@ -53,12 +55,16 @@ class InvoiceFactory extends Factory
             }
 
             $total = 0;
+
             foreach ($services as $service) {
+
                 $unitPrice = $service->price ?? rand(100, 500);
+
                 $invoice->items()->create([
                     'service_id' => $service->id,
                     'unit_price' => $unitPrice,
                 ]);
+
                 $total += $unitPrice;
             }
 
@@ -68,10 +74,11 @@ class InvoiceFactory extends Factory
             if ($status === 'paid') {
                 $paidAmount = $total;
             } elseif ($status === 'partially_paid') {
-                // If it was marked as partially paid, give it a random amount between 1 and total-1
+
                 $paidAmount = $invoice->paid_amount > 0 && $invoice->paid_amount < $total
                     ? $invoice->paid_amount
                     : rand(1, max(1, $total - 1));
+
             } else {
                 $paidAmount = 0;
                 $status = 'pending';
@@ -79,7 +86,6 @@ class InvoiceFactory extends Factory
 
             $remaining = max($total - $paidAmount, 0);
 
-            // Final status adjustment based on amounts
             if ($paidAmount <= 0) {
                 $status = 'pending';
             } elseif ($paidAmount < $total) {
@@ -95,21 +101,26 @@ class InvoiceFactory extends Factory
                 'status' => $status,
             ]);
 
-            // 📄 GENERATE AND STORE PDF
-            $pdfFileName = Str::uuid().'.pdf';
-            $pdfRelativePath = 'invoices/'.$pdfFileName;
+            // 📄 GENERATE PDF
+            $pdfFileName = Str::uuid() . '.pdf';
+            $pdfRelativePath = 'invoices/' . $pdfFileName;
 
-            // Ensure directory exists on public disk
             Storage::disk('public')->makeDirectory('invoices');
 
-            // Generate and save using Spatie Laravel PDF
             Pdf::view('invoices.pdf', [
                 'invoice' => $invoice->load(['patient', 'items.service']),
-            ])->save(
+            ])
+            ->withBrowsershot(function (Browsershot $browsershot) {
+
+                $browsershot->setChromePath(
+                    'C:\\Users\\moham\\.cache\\puppeteer\\chrome\\win64-145.0.7632.77\\chrome-win64\\chrome.exe'
+                );
+
+            })
+            ->save(
                 Storage::disk('public')->path($pdfRelativePath)
             );
 
-            // Save the path to the database
             $invoice->update([
                 'pdf_path' => $pdfRelativePath,
             ]);

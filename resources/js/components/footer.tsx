@@ -86,7 +86,7 @@ const Footer = ({
 }: FooterProps) => {
   return (
     <section className={cn("px-4 pb-2 rounded-2xl", className)}>
-      <div className="bg-white p-4 rounded-xl">
+      <div className="bg-white px-8 lg:px-14 py-6 rounded-xl">
         <div className="flex w-full flex-col justify-between gap-10 lg:flex-row lg:items-start lg:text-left mt-6">
           <div className="flex w-full flex-col justify-between gap-6 lg:items-">
             {/* Logo */}
