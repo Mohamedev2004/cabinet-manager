@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function Testimonials() {
     return (
-        <section className="mt-4 p-8 lg:p-14 rounded-xl bg-white">
+        <section className="mt-4 p-4 lg:p-14 rounded-xl bg-white">
             <div className="mx-auto space-y-8 px-6 md:space-y-16">
                 <div className="relative z-10 max-w-xl space-y-6 text-left md:space-y-12">
                     <h2 className="mb-3 text-3xl font-semibold text-pretty md:mb-4 md:text-4xl lg:mb-6 lg:max-w-3xl lg:text-5xl">Build by makers, loved by thousand developers</h2>
