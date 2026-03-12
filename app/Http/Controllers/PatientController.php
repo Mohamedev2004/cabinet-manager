@@ -33,7 +33,7 @@ class PatientController extends Controller
 
         $sortDir = $request->input('sortDir') === 'asc' ? 'asc' : 'desc';
 
-        $perPage = in_array((int) $request->input('perPage'), [5, 10, 20, 30, 50])
+        $perPage = in_array((int) $request->input('perPage'), [5,10,20,30,40,50,60])
                         ? (int) $request->input('perPage')
                         : 10;
 

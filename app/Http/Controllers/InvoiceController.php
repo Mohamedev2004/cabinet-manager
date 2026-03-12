@@ -24,7 +24,7 @@ class InvoiceController extends Controller
 
         $sortBy = in_array($request->input('sortBy'), $sortable) ? $request->input('sortBy') : 'created_at';
         $sortDir = $request->input('sortDir') === 'asc' ? 'asc' : 'desc';
-        $perPage = in_array((int) $request->input('perPage'), [5, 10, 20, 30, 40, 50, 60])
+        $perPage = in_array((int) $request->input('perPage'), [5,10,20,30,40,50,60])
             ? (int) $request->input('perPage')
             : 10;
 

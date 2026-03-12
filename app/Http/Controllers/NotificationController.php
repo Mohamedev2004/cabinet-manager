@@ -11,7 +11,7 @@ class NotificationController extends Controller
     // Admin notifications (global)
     public function index(Request $request)
     {
-        $perPage = in_array((int) $request->input('perPage'), [5, 10, 20, 30, 50], true)
+        $perPage = in_array((int) $request->input('perPage'), [5,10,20,30,40,50,60], true)
             ? (int) $request->input('perPage')
             : 10;
 
