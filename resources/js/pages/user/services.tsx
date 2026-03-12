@@ -141,16 +141,20 @@ export default function Services({ services, filters }: ServicesProps) {
         ) : (
       <div className="w-full px-6 mx-auto">
         {hasServices && <h2 className="text-2xl font-bold tracking-tight mt-4 mb-4">Services ({services.total})</h2>}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">Rechercher</span>
-            <Input placeholder="Rechercher..." value={search} onChange={handleSearch} className="w-64" />
-          </div>
-          <Button onClick={() => router.get(route('services.create'))}>
-            <Plus className="mr-2 h-4 w-4" /> Create Service
-          </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground">Rechercher</span>
+          <Input
+            placeholder="Rechercher..."
+            value={search}
+            onChange={handleSearch}
+            className="w-64"
+          />
         </div>
-
+        <Button onClick={() => router.get(route('services.create'))}>
+          <Plus className="mr-2 h-4 w-4" /> Create Service
+        </Button>
+      </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {services.data.map((service) => {
               const img = service.cover_image_url || undefined;
