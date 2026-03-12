@@ -24,7 +24,7 @@ interface Service {
   is_price_visible:boolean;
   duration?: number | null;
   is_active: boolean;
-  cover_image?: string | null;
+  cover_image_url?: string | null;
 }
 
 interface Pagination<T> {
@@ -153,7 +153,7 @@ export default function Services({ services, filters }: ServicesProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {services.data.map((service) => {
-              const img = service.cover_image ? `/storage/${service.cover_image}` : undefined;
+              const img = service.cover_image_url || undefined;
               return (
                 <Card key={service.id} className="overflow-hidden !gap-0 bg-sidebar">
                   <div className="px-4">
