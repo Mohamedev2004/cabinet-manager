@@ -170,7 +170,7 @@ export default function Services({ services, filters }: ServicesProps) {
 
                   <CardHeader className='mt-3'>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">
+                      <CardTitle className="text-base uppercase">
                         {service.name}
                       </CardTitle>
 
@@ -198,7 +198,7 @@ export default function Services({ services, filters }: ServicesProps) {
                   </CardHeader>
 
                   <CardContent className="space-y-4 mt-2">
-                    <p className="text-sm text-muted-foreground text-justify">
+                    <p className="text-sm text-muted-foreground uppercase text-justify">
                       {truncate(service.description)}
                     </p>
 
