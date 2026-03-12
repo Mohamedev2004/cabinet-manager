@@ -58,7 +58,7 @@ export function Portfolio() {
 
   return (
     <section className="w-full bg-white mt-4 p-8 lg:p-14 rounded-xl" aria-labelledby="gallery-heading">
-      <div className="container mx-auto">
+      <div className="mx-auto">
         <motion.header
           variants={sectionVariants}
           initial="hidden"
