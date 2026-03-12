@@ -242,7 +242,7 @@ class InvoiceController extends Controller
         $invoice = $invoice->load(['patient', 'items.service']);
 
         try {
-            Pdf::loadView('invoices.pdf', ['invoice' => $invoice])
+            Pdf::view('invoices.pdf', ['invoice' => $invoice])
                 ->save(Storage::disk('public')->path($pdfRelativePath));
         } catch (\Exception $e) {
             Log::error('PDF generation failed for invoice ID ' . $invoice->id . ': ' . $e->getMessage());
