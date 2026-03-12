@@ -33,7 +33,7 @@ const Services = () => {
       summary:
         "Nos experts accompagnent vos décisions pour maximiser l'efficacité et la rentabilité de vos projets.",
       url: "#",
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-dark-1.svg",
+      image: "/assets/service-1.jpg",
     },
     {
       id: "2",
@@ -41,7 +41,7 @@ const Services = () => {
       summary:
         "Nous proposons des formations sur mesure pour vos équipes afin de développer leurs compétences et savoir-faire.",
       url: "#",
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-dark-1.svg",
+      image: "/assets/service-2.jpg",
     },
     {
       id: "3",
@@ -49,7 +49,7 @@ const Services = () => {
       summary:
         "Nous analysons vos processus internes et mettons en place des solutions pour gagner en performance et en organisation.",
       url: "#",
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-dark-1.svg",
+      image: "/assets/service-3.jpg",
     },
   ];
 
@@ -71,7 +71,7 @@ const Services = () => {
           </Badge>
 
           <h2 className="mb-3 text-3xl font-semibold text-pretty md:mb-4 md:text-4xl lg:mb-6 lg:max-w-3xl lg:text-5xl">
-            Accompagner votre réussite avec sagesse
+            Accompagner votre réussite avec sagesse.
           </h2>
 
           <p className="mb-8 text-justify text-muted-foreground md:text-base lg:max-w-2xl lg:text-lg">

@@ -28,60 +28,60 @@ interface ReelStat {
 
 const keyMetrics: Metric[] = [
   {
-    label: "Project satisfaction",
+    label: "Satisfaction client",
     value: "98%",
-    caption: "Last quarter",
+    caption: "Dernier trimestre",
   },
   {
-    label: "Delivery cadence",
+    label: "Efficacité des accompagnements",
     value: "2.4x",
-    caption: "Faster",
+    caption: "Plus rapide",
   },
   {
-    label: "Retention rate",
+    label: "Taux de fidélisation",
     value: "92%",
-    caption: "After 6 months",
+    caption: "Après 6 mois",
   },
 ];
 
 const motionProcess: ProcessStep[] = [
   {
-    label: "Ideate & storyboard",
+    label: "Analyse & compréhension",
     progress: 82,
   },
   {
-    label: "Motion exploration",
+    label: "Accompagnement personnalisé",
     progress: 64,
   },
   {
-    label: "Polish & delivery",
+    label: "Suivi & résultats",
     progress: 91,
   },
 ];
 
 const inspirationGallery: GalleryImage[] = [
   {
-    src: "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?w=400&h=320&fit=crop&q=80",
-    alt: "Collage of lighting references for motion design",
+    src: "/assets/gallery-1.jpg",
+    alt: "Références visuelles pour nos méthodes",
   },
   {
-    src: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=320&fit=crop&q=80",
-    alt: "Creative workspace with monitors and sketchbook",
+    src: "/assets/gallery-2.jpg",
+    alt: "Espace de travail du cabinet",
   },
   {
-    src: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=320&fit=crop&q=80",
-    alt: "Colorful motion design storyboard pinned to a wall",
+    src: "/assets/gallery-3.jpg",
+    alt: "Storyboard de nos étapes de conseil",
   },
   {
-    src: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&h=320&fit=crop&q=80",
-    alt: "Designer adjusting camera lighting in a studio",
+    src: "/assets/gallery-4.jpg",
+    alt: "Equipe en action lors d’un accompagnement client",
   },
 ];
 
 const reelStats: ReelStat[] = [
   { label: "3:42 min" },
-  { label: "4.2K views" },
-  { label: "Dynamic timing curves" },
+  { label: "4.2K vues" },
+  { label: "Méthodologie complète" },
 ];
 
 const sectionVariants: Variants = {
@@ -117,19 +117,17 @@ export function Bento() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="flex flex-col items-start gap-4 text-center"
+          className="flex flex-col items-start gap-4 text-left"
         >
-          <Badge>
-            About Us
+          <Badge >
+            À propos
             <Grid className="ml-2 size-4" />
           </Badge>
           <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
-            Bento storytelling built for modern motion systems
+            Sagement Vôtre : un accompagnement expert pour avancer sereinement
           </h2>
           <p className="max-w-2xl text-base text-foreground/70 md:text-lg text-justify">
-            Pair narrative, metrics, and cinematic visuals inside a responsive
-            layout designed around Framer Motion micro-interactions and
-            accessible navigation.
+            Sagement Vôtre propose un accompagnement professionnel et personnalisé pour aider les particuliers et les organisations à structurer leurs projets et atteindre leurs objectifs avec confiance.
           </p>
         </motion.header>
 
@@ -163,24 +161,22 @@ export function Bento() {
             <div className="absolute inset-0 bg-gradient-to-br from-sidebar via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <div className="relative flex h-full flex-col justify-between">
               <div className="space-y-4">
-                <Badge
+                <Badge 
                 >
-                  Featured case study
+                  Étude de cas
                 </Badge>
                 <h3 className="text-2xl font-semibold leading-tight text-foreground md:text-3xl">
-                  Designing delightful product experiences
+                  Optimisation de la stratégie d'entreprise pour nos clients
                 </h3>
                 <p className="text-sm text-foreground/70 md:text-base">
-                  We choreograph micro-interactions and depth cues that elevate
-                  usability across every product surface-without sacrificing
-                  performance or accessibility.
+                  Nous accompagnons les entreprises et les particuliers dans l'analyse de leurs besoins, la planification stratégique et la mise en œuvre de solutions concrètes et efficaces.
                 </p>
               </div>
               <div className="mt-8 flex items-center justify-between gap-4">
                 <Button
                   aria-label="View the featured case study"
                 >
-                  View story
+                  Voir l'étude
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover/cta:translate-x-1" />
                 </Button>
               </div>
@@ -196,7 +192,7 @@ export function Bento() {
             aria-label="Key performance metrics"
           >
             <div className="flex items-center justify-between">
-              <Badge>
+              <Badge >
                 Performance
               </Badge>
               <motion.div
@@ -237,13 +233,13 @@ export function Bento() {
           >
             <div className="absolute inset-0">
               <img
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80"
+                src="/assets/bento-1.jpg"
                 alt="Designer workstation lit with cinematic lighting"
-                className="h-full w-full object-cover opacity-80"
+                className="h-full w-full object-cover opacity-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
               <motion.div
-                className="absolute inset-0 bg-white dark:bg-neutral-950"
+                className="absolute inset-0 bg-black/60 dark:bg-neutral-900"
                 initial={{ y: 0 }}
                 whileInView={{ y: "100%" }}
                 viewport={{ once: true, amount: 0.2 }}
@@ -251,21 +247,19 @@ export function Bento() {
               />
             </div>
             <div className="relative flex h-full flex-col justify-end space-y-4 p-6 md:p-8">
-              <Badge>
-                Behind the scenes
+              <Badge  className="bg-white text-black">
+                Inspiration
               </Badge>
-              <h3 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                Immersive motion prototypes with cinematic lighting
+              <h3 className="text-xl font-semibold text-white tracking-tight md:text-2xl">
+                Une approche humaine et stratégique
               </h3>
-              <p className="max-w-sm text-sm text-foreground/70 md:text-base">
-                Layered light, shadow, and depth cues help teams experience the
-                product as it will ship-well before the first line of production
-                code.
+              <p className="max-w-sm text-sm text-white md:text-base">
+                Notre cabinet allie expertise, écoute et réflexion stratégique pour proposer un accompagnement adapté aux besoins spécifiques de chaque client.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
-                {["Micro-interactions", "Depth cues", "Narrative flow"].map(
+                {["Analyse", "Stratégie", "Accompagnement"].map(
                   (tag) => (
-                    <Badge
+                    <Badge className="bg-white text-black"
                       key={tag}
                     >
                       {tag}
@@ -285,16 +279,14 @@ export function Bento() {
             aria-label="Motion sprint process overview"
           >
             <div className="space-y-4">
-              <Badge>
-                Motion sprint
+              <Badge >
+                Méthodologie
               </Badge>
               <h3 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                From first sketch to polished prototype in seven days
+                Un accompagnement structuré pour chaque projet
               </h3>
               <p className="text-sm text-foreground/70 md:text-base">
-                We compress discovery, exploration, and refinement into a
-                focused week-long sprint so your team can feel the flow of the
-                final experience sooner.
+                Nous combinons analyse, planification et suivi pour offrir à chaque client une stratégie adaptée et un accompagnement complet tout au long du projet.
               </p>
             </div>
             <div className="mt-6 space-y-4">
@@ -334,37 +326,36 @@ export function Bento() {
           >
             <div className="relative h-full">
               <img
-                src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
+                src="/assets/bento-2.jpg"
                 alt="Motion design workspace with monitors"
-                className="absolute inset-0 h-full w-full object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-40"
+                className="absolute inset-0 h-full w-full object-cover opacity-90 transition-opacity duration-500"
               />
               <motion.div
-                className="absolute inset-0 bg-white dark:bg-neutral-950"
+                className="absolute inset-0 bg-black/60 dark:bg-neutral-950"
                 initial={{ y: 0 }}
                 whileInView={{ y: "100%" }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
               />
-              <div className="relative flex h-full flex-col justify-between bg-gradient-to-br from-background/90 via-background/70 to-transparent p-6 md:p-8">
+              <div className="relative flex h-full flex-col justify-between bg-gradient-to-br from-black/80 via-black/60 to-transparent p-6 md:p-8">                
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <Badge>
-                      Motion showcase
+                    <Badge className="bg-white text-black">
+                      Témoignage
                     </Badge>
                   </div>
-                  <h3 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-                    Watch our latest animation breakdown
+                  <h3 className="text-xl text-white font-semibold tracking-tight text-foreground md:text-2xl">
+                    Découvrez l'accompagnement d'un de nos clients
                   </h3>
-                  <p className="max-w-md text-sm text-foreground/70 md:text-base">
-                    A three-minute deep dive into timing curves, coordinated
-                    transitions, and how we translate component choreography
-                    into production-ready systems.
+                  <p className="max-w-md text-sm text-white text-foreground/70 md:text-base">
+                    Une présentation détaillée des étapes et méthodes utilisées par notre cabinet pour guider nos clients vers le succès et les aider à atteindre leurs objectifs stratégiques.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3 pt-4 text-xs text-foreground/60">
                   <div className="flex flex-wrap gap-2">
                     {reelStats.map((stat) => (
                       <Badge
+                        className="bg-white text-black" 
                         key={stat.label}
                       >
                         {stat.label}
@@ -372,7 +363,7 @@ export function Bento() {
                     ))}
                   </div>
                   <Button size="sm" className="gap-2">
-                    Watch now
+                    Voir la vidéo
                     <PlayCircle className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </div>
@@ -389,11 +380,11 @@ export function Bento() {
             aria-label="Visual research gallery"
           >
             <div className="space-y-3">
-              <Badge>
-                Visual research
+              <Badge >
+                Galerie
               </Badge>
               <h3 className="text-lg font-semibold tracking-tight text-foreground md:text-xl">
-                Capturing texture, light, and pace for new explorations
+                Nos méthodes et inspirations en images
               </h3>
               <p className="text-sm text-foreground/70 md:text-base">
                 A snapshot of the references that steer our motion language and
