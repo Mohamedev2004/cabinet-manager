@@ -39,34 +39,12 @@ class ReportController extends Controller
         ]);
 
         // 2️⃣ Create the report
-        $report = $patient->reports()->create($validated);
+        $patient->reports()->create($validated);
 
-        // 3️⃣ Generate UNIQUE filename using UUID
-        $pdfFileName = Str::uuid() . '.pdf';
-
-        // Store inside patient-specific folder
-        $pdfRelativePath = 'reports/' . $patient->id . '/' . $pdfFileName;
-
-        // Ensure directory exists
-        Storage::disk('public')->makeDirectory('reports/' . $patient->id);
-
-        // 4️⃣ Generate and save PDF
-        Pdf::view('reports.pdf', [
-            'patient' => $patient,
-            'report' => $report,
-        ])->save(
-            Storage::disk('public')->path($pdfRelativePath)
-        );
-
-        // 5️⃣ Save path in database
-        $report->update([
-            'pdf_path' => $pdfRelativePath
-        ]);
-
-        // 6️⃣ Redirect back
+        // 3️⃣ Redirect back
         return redirect()
             ->route('patients.show', $patient->id)
-            ->with('success', 'Rapport créé avec succès et PDF généré.');
+            ->with('success', 'Rapport créé avec succès.');
     }
 
     public function show(Patient $patient, Report $report)
@@ -82,28 +60,10 @@ class ReportController extends Controller
             ->where('id', '<=', $report->id)
             ->count();
 
-        return inertia('user/patient-report', [
+        return Inertia::render('user/patient-report', [
             'patient' => $patient,
             'report' => $report,
             'reportNumber' => $reportNumber,
         ]);
-    }
-
-    public function downloadPdf(Patient $patient, Report $report)
-    {
-        // Security: ensure report belongs to patient
-        if ($report->patient_id !== $patient->id) {
-            abort(404);
-        }
-
-        // Check if PDF exists in public disk
-        if (! $report->pdf_path || ! Storage::disk('public')->exists($report->pdf_path)) {
-            abort(404, 'PDF non trouvé.');
-        }
-
-        return Response::download(
-            Storage::disk('public')->path($report->pdf_path),
-            'rapport.pdf'
-        );
     }
 }

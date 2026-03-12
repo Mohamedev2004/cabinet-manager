@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/{patient}/reports/create', [ReportController::class, 'create'])->name('report.create');
             Route::post('/{patient}/reports', [ReportController::class, 'store'])->name('report.store');
             Route::get('/{patient}/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-            Route::get('/{patient}/reports/{report}/download', [ReportController::class, 'downloadPdf'])->name('reports.download');
+            // Route::get('/{patient}/reports/{report}/download', [ReportController::class, 'downloadPdf'])->name('reports.download');
 
             // Restore & Bulk actions
             Route::post('/{id}/restore', [PatientController::class, 'restore'])->name('restore');
@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/{invoice}/status', [InvoiceController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/selected/pending', [InvoiceController::class, 'setSelectedPending'])->name('setSelectedPending');
             Route::post('/selected/paid', [InvoiceController::class, 'setSelectedPaid'])->name('setSelectedPaid');
-            Route::get('/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('download');
+            // Route::get('/{invoice}/download', [InvoiceController::class, 'downloadPdf'])->name('download');
         });
 
         // CONTACTS

@@ -7,10 +7,8 @@ use App\Models\Patient;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Spatie\LaravelPdf\Facades\Pdf;
 use Illuminate\Support\Facades\Response;
 
 class InvoiceController extends Controller
@@ -93,10 +91,7 @@ class InvoiceController extends Controller
                 ]);
             }
 
-            // Generate and save PDF
-            $this->generatePdf($invoice);
-
-            return back()->with('success', 'Facture créée avec succès et PDF généré.');
+            return back()->with('success', 'Facture créée avec succès.');
         });
     }
 
@@ -113,7 +108,6 @@ class InvoiceController extends Controller
         return DB::transaction(function () use ($invoice, $validated) {
             $total = collect($validated['items'])->sum(fn ($i) => (float) $i['unit_price']);
 
-            // Recalculate status and remaining based on existing paid_amount
             $paidAmount = $invoice->paid_amount;
             $remaining = max($total - $paidAmount, 0);
 
@@ -142,10 +136,7 @@ class InvoiceController extends Controller
                 ]);
             }
 
-            // Regenerate PDF
-            $this->generatePdf($invoice->fresh(['patient', 'items.service']));
-
-            return back()->with('success', 'Facture mise à jour avec succès et PDF régénéré.');
+            return back()->with('success', 'Facture mise à jour avec succès.');
         });
     }
 
@@ -158,30 +149,25 @@ class InvoiceController extends Controller
 
         $paidAmount = $invoice->paid_amount;
 
-        // If manually marking as paid
         if ($validated['status'] === 'paid') {
             $paidAmount = $invoice->total_amount;
         }
 
-        // If marking as pending
         if ($validated['status'] === 'pending') {
             $paidAmount = 0;
         }
 
-        // If partially paid → require paid_amount input
         if ($validated['status'] === 'partially_paid') {
             if (! isset($validated['paid_amount'])) {
                 return back()->withErrors([
                     'paid_amount' => 'Le montant payé est requis pour un paiement partiel.',
                 ]);
             }
-
             $paidAmount = min($validated['paid_amount'], $invoice->total_amount);
         }
 
         $remaining = max($invoice->total_amount - $paidAmount, 0);
 
-        // Determine real status automatically
         if ($paidAmount <= 0) {
             $status = 'pending';
         } elseif ($paidAmount < $invoice->total_amount) {
@@ -196,10 +182,7 @@ class InvoiceController extends Controller
             'status' => $status,
         ]);
 
-        // Regenerate PDF
-        $this->generatePdf($invoice->fresh(['patient', 'items.service']));
-
-        return back()->with('success', 'Statut de la facture mis à jour et PDF régénéré.');
+        return back()->with('success', 'Statut de la facture mis à jour.');
     }
 
     public function setSelectedPending(Request $request)
@@ -210,37 +193,6 @@ class InvoiceController extends Controller
     public function setSelectedPaid(Request $request)
     {
         return $this->setSelectedStatus($request, 'paid');
-    }
-
-    private function generatePdf(Invoice $invoice): string
-    {
-        // 1️⃣ Generate UNIQUE filename using UUID if not already present
-        $pdfFileName = Str::uuid().'.pdf';
-
-        // 2️⃣ Store inside invoices folder
-        $pdfRelativePath = 'invoices/'.$pdfFileName;
-
-        // Ensure directory exists
-        Storage::disk('public')->makeDirectory('invoices');
-
-        // Delete old PDF if exists
-        if ($invoice->pdf_path && Storage::disk('public')->exists($invoice->pdf_path)) {
-            Storage::disk('public')->delete($invoice->pdf_path);
-        }
-
-        // 3️⃣ Generate and save PDF
-        Pdf::view('invoices.pdf', [
-            'invoice' => $invoice->load(['patient', 'items.service']),
-        ])->save(
-            Storage::disk('public')->path($pdfRelativePath)
-        );
-
-        // 4️⃣ Save path in database
-        $invoice->update([
-            'pdf_path' => $pdfRelativePath,
-        ]);
-
-        return $pdfRelativePath;
     }
 
     public function setSelectedStatus(Request $request, string $status)
@@ -265,30 +217,9 @@ class InvoiceController extends Controller
                 'paid_amount' => $paidAmount,
                 'remaining_amount' => max($invoice->total_amount - $paidAmount, 0),
             ]);
-
-            // Regenerate PDF for each updated invoice
-            $this->generatePdf($invoice->fresh(['patient', 'items.service']));
         }
 
-        return back()->with('success', 'Factures sélectionnées mises à jour et PDFs régénérés');
-    }
-
-    public function downloadPdf(Invoice $invoice)
-    {
-        // Check if PDF exists in public disk
-        if (! $invoice->pdf_path || ! Storage::disk('public')->exists($invoice->pdf_path)) {
-            // If not exists, try to regenerate it
-            $this->generatePdf($invoice->load(['patient', 'items.service']));
-
-            if (! $invoice->pdf_path || ! Storage::disk('public')->exists($invoice->pdf_path)) {
-                abort(404, 'PDF non trouvé et impossible de le générer.');
-            }
-        }
-
-        return Response::download(
-            Storage::disk('public')->path($invoice->pdf_path),
-            'facture-'.$invoice->invoice_number.'.pdf'
-        );
+        return back()->with('success', 'Factures sélectionnées mises à jour.');
     }
 
     private function generateInvoiceNumber(): string
