@@ -230,7 +230,7 @@ class InvoiceController extends Controller
         try {
             // Force DOMPDF driver
             Pdf::driver('dompdf')
-                ->loadView('invoices.pdf', ['invoice' => $invoice])
+                ->view('invoices.pdf', ['invoice' => $invoice])
                 ->save(Storage::disk('public')->path($pdfRelativePath));
         } catch (\Exception $e) {
             Log::error('PDF generation failed for invoice ID ' . $invoice->id . ': ' . $e->getMessage());
