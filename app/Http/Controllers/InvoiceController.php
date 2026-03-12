@@ -210,6 +210,43 @@ class InvoiceController extends Controller
         return back()->with('success', 'Factures sélectionnées mises à jour et PDFs régénérés');
     }
 
+    private function generatePdf(Invoice $invoice): string
+    {
+        $pdfFileName = Str::uuid() . '.pdf';
+        $pdfRelativePath = 'invoices/' . $pdfFileName;
+
+        // Make sure directory exists
+        if (!Storage::disk('public')->exists('invoices')) {
+            Storage::disk('public')->makeDirectory('invoices');
+        }
+
+        // Remove old PDF if exists
+        if (!empty($invoice->pdf_path) && Storage::disk('public')->exists($invoice->pdf_path)) {
+            Storage::disk('public')->delete($invoice->pdf_path);
+        }
+
+        $invoice = $invoice->load(['patient', 'items.service']);
+
+        try {
+            // Force DOMPDF driver
+            Pdf::driver('dompdf')
+                ->loadView('invoices.pdf', ['invoice' => $invoice])
+                ->save(Storage::disk('public')->path($pdfRelativePath));
+        } catch (\Exception $e) {
+            Log::error('PDF generation failed for invoice ID ' . $invoice->id . ': ' . $e->getMessage());
+            return '';
+        }
+
+        if (Storage::disk('public')->exists($pdfRelativePath)) {
+            $invoice->update(['pdf_path' => $pdfRelativePath]);
+        }
+
+        return $pdfRelativePath;
+    }
+
+    /**
+     * Download PDF
+     */
     public function downloadPdf(Invoice $invoice)
     {
         if (!$invoice->pdf_path || !Storage::disk('public')->exists($invoice->pdf_path)) {
@@ -231,35 +268,6 @@ class InvoiceController extends Controller
         }
     }
 
-    private function generatePdf(Invoice $invoice): string
-    {
-        $pdfFileName = Str::uuid() . '.pdf';
-        $pdfRelativePath = 'invoices/' . $pdfFileName;
-
-        if (!Storage::disk('public')->exists('invoices')) {
-            Storage::disk('public')->makeDirectory('invoices');
-        }
-
-        if (!empty($invoice->pdf_path) && Storage::disk('public')->exists($invoice->pdf_path)) {
-            Storage::disk('public')->delete($invoice->pdf_path);
-        }
-
-        $invoice = $invoice->load(['patient', 'items.service']);
-
-        try {
-            Pdf::view('invoices.pdf', ['invoice' => $invoice])
-                ->save(Storage::disk('public')->path($pdfRelativePath));
-        } catch (\Exception $e) {
-            Log::error('PDF generation failed for invoice ID ' . $invoice->id . ': ' . $e->getMessage());
-            return '';
-        }
-
-        if (Storage::disk('public')->exists($pdfRelativePath)) {
-            $invoice->update(['pdf_path' => $pdfRelativePath]);
-        }
-
-        return $pdfRelativePath;
-    }
 
     private function generateInvoiceNumber(): string
     {
