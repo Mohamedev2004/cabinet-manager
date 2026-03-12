@@ -23,9 +23,9 @@ type Service = {
   duration?: number | null;
   is_active: boolean;
   is_price_visible: boolean;
-  cover_image?: string | null;
-  image_one?: string | null;
-  image_two?: string | null;
+  cover_image_url?: string | null;
+  image_one_url?: string | null;
+  image_two_url?: string | null;
   faqs?: Faq[];
 };
 
@@ -193,8 +193,8 @@ export default function UpdateService() {
               {errors.cover_image && <p className="text-destructive text-sm mt-1">{errors.cover_image}</p>}
               {coverPreview ? (
                 <img src={coverPreview} alt="Prévisualisation" className="mt-2 h-24 rounded-md object-cover" />
-              ) : service.cover_image ? (
-                <img src={`/storage/${service.cover_image}`} alt="Couverture actuelle" className="mt-2 h-24 rounded-md object-cover" />
+              ) : service.cover_image_url ? (
+                <img src={service.cover_image_url} alt="Couverture actuelle" className="mt-2 h-24 rounded-md object-cover" />
               ) : null}
             </div>
             <div>
@@ -212,8 +212,8 @@ export default function UpdateService() {
               {errors.image_one && <p className="text-destructive text-sm mt-1">{errors.image_one}</p>}
               {imageOnePreview ? (
                 <img src={imageOnePreview} alt="Prévisualisation" className="mt-2 h-24 rounded-md object-cover" />
-              ) : service.image_one ? (
-                <img src={`/storage/${service.image_one}`} alt="Image 1 actuelle" className="mt-2 h-24 rounded-md object-cover" />
+              ) : service.image_one_url ? (
+                <img src={service.image_one_url} alt="Image 1 actuelle" className="mt-2 h-24 rounded-md object-cover" />
               ) : null}
             </div>
             <div>
@@ -231,8 +231,8 @@ export default function UpdateService() {
               {errors.image_two && <p className="text-destructive text-sm mt-1">{errors.image_two}</p>}
               {imageTwoPreview ? (
                 <img src={imageTwoPreview} alt="Prévisualisation" className="mt-2 h-24 rounded-md object-cover" />
-              ) : service.image_two ? (
-                <img src={`/storage/${service.image_two}`} alt="Image 2 actuelle" className="mt-2 h-24 rounded-md object-cover" />
+              ) : service.image_two_url ? (
+                <img src={service.image_two_url} alt="Image 2 actuelle" className="mt-2 h-24 rounded-md object-cover" />
               ) : null}
             </div>
           </CardContent>
