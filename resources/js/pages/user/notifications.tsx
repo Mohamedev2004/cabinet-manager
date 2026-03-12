@@ -352,7 +352,7 @@ export default function Notifications({ notifications, filters }: NotificationsP
                       <SelectValue placeholder="Par page" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[5, 10, 20, 30, 50].map((n) => (
+                      {[5, 10, 20, 30, 40, 50, 60].map((n) => (
                         <SelectItem key={n} value={String(n)}>
                           {n}
                         </SelectItem>
