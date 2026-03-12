@@ -24,7 +24,7 @@ class ServiceController extends Controller
 
         $services = $query->paginate($perPage)->withQueryString();
 
-        // Append full image URLs to each service
+        // Add full image URLs
         $services->getCollection()->transform(function ($service) {
             $service->cover_image_url = $service->cover_image ? Storage::disk('public')->url($service->cover_image) : null;
             $service->image_one_url = $service->image_one ? Storage::disk('public')->url($service->image_one) : null;
@@ -41,11 +41,16 @@ class ServiceController extends Controller
         ]);
     }
 
-    // ... rest of your controller methods unchanged ...
+    public function create()
+    {
+        return Inertia::render('user/create-service');
+    }
 
     public function store(Request $request)
     {
         $input = $request->all();
+
+        // Convert "yes"/"no" strings to boolean
         foreach (['is_active', 'is_price_visible'] as $key) {
             if (array_key_exists($key, $input)) {
                 if ($input[$key] === 'yes') {
@@ -71,6 +76,7 @@ class ServiceController extends Controller
             'faqs.*.answer' => ['required_with:faqs', 'string'],
         ])->validate();
 
+        // Store uploaded images
         foreach (['cover_image', 'image_one', 'image_two'] as $img) {
             if ($request->hasFile($img)) {
                 $data[$img] = $request->file($img)->store('services', 'public');
@@ -82,6 +88,7 @@ class ServiceController extends Controller
 
         $service = Service::create($data);
 
+        // Create FAQs if provided
         if (is_array($faqs)) {
             foreach ($faqs as $faq) {
                 $service->faqs()->create($faq);
@@ -91,5 +98,93 @@ class ServiceController extends Controller
         return redirect()->route('services.index')->with('success', 'Service created successfully.');
     }
 
-    // Similarly for update(), you can keep your existing code unchanged.
+    public function show(Service $service)
+    {
+        $service->load('faqs');
+
+        // Add image URLs
+        $service->cover_image_url = $service->cover_image ? Storage::disk('public')->url($service->cover_image) : null;
+        $service->image_one_url = $service->image_one ? Storage::disk('public')->url($service->image_one) : null;
+        $service->image_two_url = $service->image_two ? Storage::disk('public')->url($service->image_two) : null;
+
+        return Inertia::render('user/service-details', [
+            'service' => $service,
+        ]);
+    }
+
+    public function edit(Service $service)
+    {
+        $service->load('faqs');
+
+        // Add image URLs
+        $service->cover_image_url = $service->cover_image ? Storage::disk('public')->url($service->cover_image) : null;
+        $service->image_one_url = $service->image_one ? Storage::disk('public')->url($service->image_one) : null;
+        $service->image_two_url = $service->image_two ? Storage::disk('public')->url($service->image_two) : null;
+
+        return Inertia::render('user/update-service', [
+            'service' => $service,
+        ]);
+    }
+
+    public function update(Request $request, Service $service)
+    {
+        $input = $request->all();
+
+        // Convert "yes"/true string to boolean
+        $input['is_active'] = ($request->is_active === 'yes' || $request->is_active === true);
+        $input['is_price_visible'] = ($request->is_price_visible === 'yes' || $request->is_price_visible === true);
+
+        $validatedData = Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'price' => ['nullable', 'numeric'],
+            'is_price_visible' => ['boolean'],
+            'is_active' => ['boolean'],
+            'duration' => ['nullable', 'integer'],
+            'cover_image' => ['nullable', 'image', 'max:2048'],
+            'image_one' => ['nullable', 'image', 'max:2048'],
+            'image_two' => ['nullable', 'image', 'max:2048'],
+        ])->validate();
+
+        $files = ['cover_image', 'image_one', 'image_two'];
+        $updateData = collect($validatedData)->except($files)->toArray();
+
+        DB::transaction(function () use ($request, $service, $updateData, $files) {
+            foreach ($files as $img) {
+                if ($request->hasFile($img)) {
+                    // Delete old file if exists
+                    if ($service->$img) {
+                        Storage::disk('public')->delete($service->$img);
+                    }
+                    // Store new file and update data array
+                    $updateData[$img] = $request->file($img)->store('services', 'public');
+                }
+            }
+
+            $service->update($updateData);
+
+            // Update FAQs
+            if ($request->has('faqs')) {
+                $service->faqs()->delete();
+                $service->faqs()->createMany($request->faqs);
+            }
+        });
+
+        return redirect()->route('services.index')->with('success', 'Service updated successfully.');
+    }
+
+    public function destroy(Service $service)
+    {
+        $service->delete();
+
+        return back()->with('success', 'Service deleted successfully.');
+    }
+
+    public function restore($id)
+    {
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->restore();
+
+        return back()->with('success', 'Service restored successfully.');
+    }
 }

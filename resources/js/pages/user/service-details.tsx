@@ -19,9 +19,9 @@ type Service = {
   duration?: number | null;
   is_active: boolean;
   is_price_visible: boolean;
-  cover_image?: string | null;
-  image_one?: string | null;
-  image_two?: string | null;
+  cover_image_url?: string | null;
+  image_one_url?: string | null;
+  image_two_url?: string | null;
   faqs?: Faq[];
 };
 
@@ -37,16 +37,14 @@ export default function ServiceDetails() {
 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const cover = service.cover_image
-    ? `/storage/${service.cover_image}`
-    : null;
+  const cover = service.cover_image_url ?? null;
 
   const gallery = [
-    service.image_one
-      ? { src: `/storage/${service.image_one}`, alt: "Service image 1" }
+    service.image_one_url
+      ? { src: service.image_one_url, alt: "Service image 1" }
       : null,
-    service.image_two
-      ? { src: `/storage/${service.image_two}`, alt: "Service image 2" }
+    service.image_two_url
+      ? { src: service.image_two_url, alt: "Service image 2" }
       : null,
   ].filter(Boolean) as { src: string; alt: string }[];
 
