@@ -6,10 +6,7 @@ use App\Models\Invoice;
 use App\Models\Patient;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Spatie\LaravelPdf\Facades\Pdf;
-use Spatie\Browsershot\Browsershot;
 
 class InvoiceFactory extends Factory
 {
@@ -47,7 +44,7 @@ class InvoiceFactory extends Factory
     {
         return $this->afterCreating(function (Invoice $invoice) {
 
-            // Get random services (1–3 services)
+            // Get random services (1–3)
             $services = Service::inRandomOrder()->take(rand(1, 3))->get();
 
             if ($services->isEmpty()) {
@@ -99,26 +96,6 @@ class InvoiceFactory extends Factory
                 'paid_amount' => $paidAmount,
                 'remaining_amount' => $remaining,
                 'status' => $status,
-            ]);
-
-            // 📄 GENERATE PDF
-            $pdfFileName = Str::uuid() . '.pdf';
-            $pdfRelativePath = 'invoices/' . $pdfFileName;
-
-            Storage::disk('public')->makeDirectory('invoices');
-
-            Pdf::view('invoices.pdf', [
-                'invoice' => $invoice->load(['patient', 'items.service']),
-            ])
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->noSandbox();
-            })
-            ->save(
-                Storage::disk('public')->path($pdfRelativePath)
-            );
-
-            $invoice->update([
-                'pdf_path' => $pdfRelativePath,
             ]);
         });
     }
