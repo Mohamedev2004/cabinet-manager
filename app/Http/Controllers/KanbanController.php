@@ -58,7 +58,7 @@ class KanbanController extends Controller
             $initialTasks[$status] = Cache::tags([$this->cacheTag])->remember($cacheKey, now()->addMinutes(5), function () use ($status) {
                 return Task::with('patient')
                     ->where('status', $status)
-                    ->orderByDesc('due_date')
+                    ->orderByDesc('created_at')
                     ->paginate(8, ['*'], 'page', 1)
                     ->through(fn ($task) => [
                         'id' => $task->id,
