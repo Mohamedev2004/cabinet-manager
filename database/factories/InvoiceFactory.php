@@ -111,11 +111,7 @@ class InvoiceFactory extends Factory
                 'invoice' => $invoice->load(['patient', 'items.service']),
             ])
             ->withBrowsershot(function (Browsershot $browsershot) {
-
-                $browsershot->setChromePath(
-                    'C:\\Users\\moham\\.cache\\puppeteer\\chrome\\win64-145.0.7632.77\\chrome-win64\\chrome.exe'
-                );
-
+                $browsershot->noSandbox();
             })
             ->save(
                 Storage::disk('public')->path($pdfRelativePath)
