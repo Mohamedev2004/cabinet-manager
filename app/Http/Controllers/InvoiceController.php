@@ -220,10 +220,15 @@ class InvoiceController extends Controller
             abort(404, 'PDF non trouvé et impossible de le générer.');
         }
 
-        return Response::download(
-            Storage::disk('public')->path($invoice->pdf_path),
-            'facture-' . $invoice->invoice_number . '.pdf'
-        );
+        try {
+            return Response::download(
+                Storage::disk('public')->path($invoice->pdf_path),
+                'facture-' . $invoice->invoice_number . '.pdf'
+            );
+        } catch (\Exception $e) {
+            Log::error("Failed to download PDF: ".$e->getMessage());
+            abort(404, 'PDF non trouvé.');
+        }
     }
 
     private function generatePdf(Invoice $invoice): string
