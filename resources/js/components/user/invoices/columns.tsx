@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, Clock, CreditCard, Download, Eye, Loader, Loader2, MoreHorizontal, SquarePen } from "lucide-react";
+import { Check, CreditCard, /* Download */ Eye, Loader2, MoreHorizontal, SquarePen } from "lucide-react";
 
 export interface InvoiceItem {
   id?: number;
@@ -277,12 +277,12 @@ export const createInvoiceColumns = (
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <a href={route("invoices.download", invoice.id)}>
                 <Download className="mr-2 h-4 w-4" />
                 Télécharger PDF
               </a>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
 
             {invoice.status !== "pending" && (
               <DropdownMenuItem onClick={() => opts.onSetPending(invoice)}>

@@ -111,14 +111,14 @@ export function ContactsDataTable<TData, TValue>({
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Rechercher..."
-                  className="w-[240px]"
+                  className="sm:w-[240px] w-full"
                 />
                 </div>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
               {onAddClick && (
-                <Button onClick={onAddClick}>
+                <Button onClick={onAddClick} className="w-full sm:w-auto">
                   <Plus className="mr-2 h-4 w-4" /> Ajouter un contact
                 </Button>
               )}

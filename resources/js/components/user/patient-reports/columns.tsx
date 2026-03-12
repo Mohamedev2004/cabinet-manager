@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { router } from "@inertiajs/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, Download } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Eye, /* Download */ } from "lucide-react";
+import { /* Badge */ } from "@/components/ui/badge";
 
 export interface Report {
   id: number;
@@ -87,7 +87,7 @@ export const createReportColumns = (
     cell: ({ row }) =>
       new Date(row.original.created_at).toLocaleDateString("fr-FR"),
   },
-  {
+  /* {
     accessorKey: "pdf_path",
     header: "PDF",
     cell: ({ row }) => {
@@ -110,7 +110,7 @@ export const createReportColumns = (
         </Badge>
       );
     },
-  },
+  }, */
   {
     id: "actions",
     enableHiding: false,

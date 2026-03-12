@@ -105,42 +105,45 @@ export function PatientDataTable<TData>({
       ) : (
         <>
           {/* ✅ Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 py-4">
-            <div className="flex items-center gap-4 flex-1 min-w-[250px]">
-              <div className="flex flex-col">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 py-4">
+            {/* Search + Status */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+              <div className="flex flex-col w-full sm:w-auto">
                 <span className="text-xs text-muted-foreground">Rechercher</span>
                 <Input
                   placeholder="Rechercher un patient..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="max-w-xs"
+                  className="w-full sm:max-w-xs"
                 />
               </div>
-              
-              <div className="flex flex-col">
+
+              <div className="flex flex-col w-full sm:w-auto">
                 <span className="text-xs text-muted-foreground">Statut</span>
                 <Select
                   value={filters.trashed ?? "all"}
                   onValueChange={(value) => onFilterChange("trashed", value)}
                 >
-                  <SelectTrigger className="w-36">
+                  <SelectTrigger className="w-full sm:w-36">
                     <SelectValue placeholder="Tous" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tous</SelectItem>
-                  <SelectItem value="actifs">Actifs</SelectItem>
-                  <SelectItem value="deleted">Archivés</SelectItem>
-                </SelectContent>
-              </Select>
+                    <SelectItem value="actifs">Actifs</SelectItem>
+                    <SelectItem value="deleted">Archivés</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full">
               {hasSelection && onBulkDelete && (
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => onBulkDelete(selectedIds)}
+                  className="w-full sm:w-auto"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Archiver ({selectedIds.length})
@@ -148,13 +151,13 @@ export function PatientDataTable<TData>({
               )}
 
               {hasSoftDeleted && (
-                <Button variant="outline" onClick={onRestoreAllClick}>
+                <Button variant="outline" onClick={onRestoreAllClick} className="w-full sm:w-auto">
                   <Undo2 className="mr-2 h-4 w-4" /> Restaurer tout
                 </Button>
               )}
 
               {onAddClick && (
-                <Button variant="default" size="sm" onClick={onAddClick}>
+                <Button variant="default" size="sm" onClick={onAddClick} className="w-full sm:w-auto">
                   <Plus className="mr-2 h-4 w-4" /> Ajouter un Patient
                 </Button>
               )}

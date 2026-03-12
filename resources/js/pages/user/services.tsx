@@ -148,7 +148,7 @@ export default function Services({ services, filters }: ServicesProps) {
             placeholder="Rechercher..."
             value={search}
             onChange={handleSearch}
-            className="w-64"
+            className="sm:w-64 w-full"
           />
         </div>
         <Button onClick={() => router.get(route('services.create'))}>

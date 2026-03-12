@@ -16,7 +16,6 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-table-view-options";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, Loader2, AlertTriangle, Plus } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -128,23 +127,23 @@ export function TasksDataTable<TData, TValue>({
     <div className="w-full">
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 py-4">
-
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 py-4">
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-4">
-
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 w-full sm:w-auto">
+          
           {/* Status Filter */}
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-col w-full sm:w-auto">
               <span className="text-xs text-muted-foreground">Rechercher</span>
               <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Rechercher..."
-                className="w-[240px]"
+                className="w-full sm:w-[240px]"
               />
             </div>
-            <div className="flex flex-col">
+
+            <div className="flex flex-col w-full sm:w-auto">
               <span className="text-xs text-muted-foreground">Statut</span>
               <Select
                 value={filters.status ?? "all"}
@@ -152,24 +151,24 @@ export function TasksDataTable<TData, TValue>({
                   onFilterChange("status", val === "all" ? undefined : val)
                 }
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="Tous" />
                 </SelectTrigger>
                 <SelectContent>
-                <SelectItem value="all">Tous</SelectItem>
-                {STATUS_OPTIONS.map(s => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectItem value="all">Tous</SelectItem>
+                  {STATUS_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {/* Priority Filter */}
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-col w-full sm:w-auto">
               <span className="text-xs text-muted-foreground">Priorité</span>
               <Select
                 value={filters.priority ?? "all"}
@@ -177,33 +176,32 @@ export function TasksDataTable<TData, TValue>({
                   onFilterChange("priority", val === "all" ? undefined : val)
                 }
               >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-full sm:w-40">
                   <SelectValue placeholder="Toutes" />
                 </SelectTrigger>
                 <SelectContent>
-                <SelectItem value="all">Toutes</SelectItem>
-                {PRIORITY_OPTIONS.map(p => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  <SelectItem value="all">Toutes</SelectItem>
+                  {PRIORITY_OPTIONS.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
         {/* Bulk Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
           {selectedCount > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" className="w-full sm:w-auto">
                   Actions groupées ({selectedCount})
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-
                 {onSetSelectedPending && (
                   <DropdownMenuItem
                     onClick={() => onSetSelectedPending(selectedIds)}
@@ -211,7 +209,6 @@ export function TasksDataTable<TData, TValue>({
                     Passer en attente
                   </DropdownMenuItem>
                 )}
-
                 {onSetSelectedInProgress && (
                   <DropdownMenuItem
                     onClick={() => onSetSelectedInProgress(selectedIds)}
@@ -219,25 +216,22 @@ export function TasksDataTable<TData, TValue>({
                     Passer en cours
                   </DropdownMenuItem>
                 )}
-
                 {onSetSelectedDone && (
-                  <DropdownMenuItem
-                    onClick={() => onSetSelectedDone(selectedIds)}
-                  >
+                  <DropdownMenuItem onClick={() => onSetSelectedDone(selectedIds)}>
                     Passer terminé
                   </DropdownMenuItem>
                 )}
-
               </DropdownMenuContent>
             </DropdownMenu>
           )}
 
           {onAddClick && (
-            <Button size="sm" onClick={onAddClick}>
+            <Button size="sm" onClick={onAddClick} className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Ajouter une tâche
             </Button>
           )}
+
           <DataTableViewOptions table={table} />
         </div>
       </div>
