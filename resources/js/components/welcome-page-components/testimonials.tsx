@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 export default function Testimonials() {
     return (
         <section className="mt-4 p-4 lg:p-14 rounded-xl bg-white">
-            <div className="mx-auto space-y-8 px-6 md:space-y-16">
+            <div className="mx-auto space-y-8 md:space-y-16">
                 <div className="relative z-10 max-w-xl space-y-6 text-left md:space-y-12">
                     <h2 className="mb-3 text-3xl font-semibold text-pretty md:mb-4 md:text-4xl lg:mb-6 lg:max-w-3xl lg:text-5xl">Build by makers, loved by thousand developers</h2>
                     <p className='text-justify text-muted-foreground md:text-base lg:max-w-2xl lg:text-lg'>Gemini is evolving to be more than just the models. It supports an entire to the APIs and platforms helping developers and businesses innovate.</p>
