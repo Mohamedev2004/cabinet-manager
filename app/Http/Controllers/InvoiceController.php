@@ -215,30 +215,30 @@ class InvoiceController extends Controller
         $pdfFileName = Str::uuid() . '.pdf';
         $pdfRelativePath = 'invoices/' . $pdfFileName;
 
-        // Make sure directory exists
-        if (!Storage::disk('public')->exists('invoices')) {
-            Storage::disk('public')->makeDirectory('invoices');
-        }
-
-        // Remove old PDF if exists
-        if (!empty($invoice->pdf_path) && Storage::disk('public')->exists($invoice->pdf_path)) {
-            Storage::disk('public')->delete($invoice->pdf_path);
-        }
-
+        // Load relationships before generation
         $invoice = $invoice->load(['patient', 'items.service']);
 
         try {
-            // Force DOMPDF driver
-            Pdf::driver('dompdf')
+            // 1. Generate the PDF as a raw string in memory
+            $pdfContent = Pdf::driver('dompdf')
                 ->view('invoices.pdf', ['invoice' => $invoice])
-                ->save(Storage::disk('public')->path($pdfRelativePath));
+                ->output(); // Crucial: gets raw data, doesn't try to save to disk
+
+            // 2. Use the Storage facade to upload to the Laravel Cloud Bucket
+            // Laravel Cloud handles the "invoices/" directory creation automatically
+            Storage::disk('public')->put($pdfRelativePath, $pdfContent);
+
+            // 3. Delete old PDF if it exists in the bucket
+            if (!empty($invoice->pdf_path)) {
+                Storage::disk('public')->delete($invoice->pdf_path);
+            }
+
+            // 4. Update the database with the new path
+            $invoice->update(['pdf_path' => $pdfRelativePath]);
+
         } catch (\Exception $e) {
             Log::error('PDF generation failed for invoice ID ' . $invoice->id . ': ' . $e->getMessage());
             return '';
-        }
-
-        if (Storage::disk('public')->exists($pdfRelativePath)) {
-            $invoice->update(['pdf_path' => $pdfRelativePath]);
         }
 
         return $pdfRelativePath;
@@ -250,21 +250,21 @@ class InvoiceController extends Controller
     public function downloadPdf(Invoice $invoice)
     {
         if (!$invoice->pdf_path || !Storage::disk('public')->exists($invoice->pdf_path)) {
-            $this->generatePdf($invoice->load(['patient', 'items.service']));
+            $this->generatePdf($invoice);
         }
 
-        if (!$invoice->pdf_path || !Storage::disk('public')->exists($invoice->pdf_path)) {
-            abort(404, 'PDF non trouvé et impossible de le générer.');
-        }
+        // Refresh model to get the new path if it was just generated
+        $invoice->refresh();
 
         try {
-            return Response::download(
-                Storage::disk('public')->path($invoice->pdf_path),
+            // This works perfectly with Laravel Cloud Buckets
+            return Storage::disk('public')->download(
+                $invoice->pdf_path, 
                 'facture-' . $invoice->invoice_number . '.pdf'
             );
         } catch (\Exception $e) {
-            Log::error("Failed to download PDF: ".$e->getMessage());
-            abort(404, 'PDF non trouvé.');
+            Log::error("Failed to download PDF: " . $e->getMessage());
+            abort(404, 'Impossible de télécharger le PDF.');
         }
     }
 
