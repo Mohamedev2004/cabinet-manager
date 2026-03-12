@@ -105,60 +105,58 @@ export function NewsletterDataTable<TData>({
       ) : (
         <>
           {/* Barre d'outils */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-4 py-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-              <div className="flex flex-col w-full sm:w-auto">
-                <span className="text-xs text-muted-foreground">Rechercher</span>
-                <Input
-                  placeholder="Rechercher un courriel..."
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="w-full sm:max-w-xs"
+          <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+            <div className="flex items-center gap-4 flex-1 min-w-[250px]">
+              <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Rechercher</span>
+              <Input
+                placeholder="Rechercher un courriel..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="max-w-xs"
                 />
               </div>
 
-              <div className="flex flex-col w-full sm:w-auto">
-                <span className="text-xs text-muted-foreground">Statut</span>
-                <Select
-                  value={filters.trashed ?? "all"}
-                  onValueChange={(value) => onFilterChange("trashed", value)}
-                >
-                  <SelectTrigger className="w-full sm:w-36">
-                    <SelectValue placeholder="Tous" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tous</SelectItem>
-                    <SelectItem value="subscribed">Abonnés</SelectItem>
-                    <SelectItem value="unsubscribed">Désabonnés</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground">Statut</span>
+              <Select value={filters.trashed ?? "all"} onValueChange={(value) => onFilterChange("trashed", value)}>
+                <SelectTrigger className="w-36">
+                  <SelectValue placeholder="Tous" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="subscribed">Abonnés</SelectItem>
+                  <SelectItem value="unsubscribed">Désabonnés</SelectItem>
+                </SelectContent>
+              </Select>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full">
+            <div className="flex items-center gap-2">
               {hasSelection && onBulkDelete && (
-                <Button variant="destructive" size="sm" onClick={() => onBulkDelete(selectedIds)} className="w-full sm:w-auto">
+                <Button variant="destructive" size="sm" onClick={() => onBulkDelete(selectedIds)}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   Désabonner ({selectedIds.length})
                 </Button>
               )}
               {hasSoftDeleted && (
-                <Button variant="outline" onClick={onRestoreAllClick} className="w-full sm:w-auto">
+                <Button variant="outline" onClick={onRestoreAllClick}>
                   <Undo2 className="mr-2 h-4 w-4" /> Restaurer tout
                 </Button>
               )}
               {onAddClick && (
-                <Button variant="default" size="sm" onClick={onAddClick} className="w-full sm:w-auto">
+                <Button variant="default" size="sm" onClick={onAddClick}>
                   <Plus className="mr-2 h-4 w-4" /> Ajouter un Abonné
                 </Button>
               )}
               {onExportClick && (
-                <Button variant="outline" size="sm" onClick={onExportClick} className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" onClick={onExportClick}>
                   <Download className="mr-2 h-4 w-4" /> Exporter
                 </Button>
               )}
               <DataTableViewOptions table={table} />
             </div>
+
           </div>
           {/* Tableau */}
           <div className="rounded-md border overflow-hidden">

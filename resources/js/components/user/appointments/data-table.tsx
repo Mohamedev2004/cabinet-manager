@@ -17,7 +17,7 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-table-view-options";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { CalendarDays } from "lucide-react";
 import {
